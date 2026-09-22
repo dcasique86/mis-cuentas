@@ -1,0 +1,79 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="160dp"
+    android:viewportWidth="320"
+    android:viewportHeight="160">
+    <!-- Card Container -->
+    <path
+        android:fillColor="#F8F5EF"
+        android:strokeColor="#ECE7DE"
+        android:strokeWidth="2"
+        android:pathData="M24,10 H296 A14,14 0 0 1 310,24 V136 A14,14 0 0 1 296,150 H24 A14,14 0 0 1 10,136 V24 A14,14 0 0 1 24,10 Z"/>
+
+    <!-- App Logo Icon -->
+    <path
+        android:fillColor="#0F4D3C"
+        android:pathData="M28,24 H48 A5,5 0 0 1 53,29 V43 A5,5 0 0 1 48,48 H28 A5,5 0 0 1 23,43 V29 A5,5 0 0 1 28,24 Z"/>
+    <path
+        android:fillColor="#71C2A7"
+        android:pathData="M29,33 H47 V39 H29 Z"/>
+
+    <!-- Title "Mis Cuentas" & subtitle -->
+    <path
+        android:fillColor="#18201E"
+        android:pathData="M60,26 H115 V33 H60 Z"/>
+    <path
+        android:fillColor="#7A8B82"
+        android:pathData="M60,37 H135 V42 H60 Z"/>
+
+    <!-- Balance "$13.620" & variation -->
+    <path
+        android:fillColor="#0F4D3C"
+        android:pathData="M24,60 H110 V78 H24 Z"/>
+    <path
+        android:fillColor="#1E7E45"
+        android:pathData="M24,84 H85 V90 H24 Z"/>
+
+    <!-- Metrics Column: Ingresos ($1.250) -->
+    <path
+        android:fillColor="#E6F4EA"
+        android:pathData="M142,62 A8,8 0 1 1 126,62 A8,8 0 1 1 142,62 Z"/>
+    <path
+        android:fillColor="#1E7E45"
+        android:pathData="M132,58 H136 V66 H132 Z"/>
+    <path
+        android:fillColor="#7A8B82"
+        android:pathData="M148,56 H185 V60 H148 Z"/>
+    <path
+        android:fillColor="#18201E"
+        android:pathData="M148,63 H195 V69 H148 Z"/>
+
+    <!-- Metrics Column: Gastos ($600) -->
+    <path
+        android:fillColor="#FCE8E6"
+        android:pathData="M232,62 A8,8 0 1 1 216,62 A8,8 0 1 1 232,62 Z"/>
+    <path
+        android:fillColor="#E05D44"
+        android:pathData="M222,58 H226 V66 H222 Z"/>
+    <path
+        android:fillColor="#7A8B82"
+        android:pathData="M238,56 H270 V60 H238 Z"/>
+    <path
+        android:fillColor="#18201E"
+        android:pathData="M238,63 H280 V69 H238 Z"/>
+
+    <!-- Buttons row: + Ingreso (Green pill) & - Gasto (Coral pill) -->
+    <path
+        android:fillColor="#0F4D3C"
+        android:pathData="M30,106 H146 A8,8 0 0 1 154,114 V126 A8,8 0 0 1 146,134 H30 A8,8 0 0 1 22,126 V114 A8,8 0 0 1 30,106 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,117 H110 V123 H66 Z"/>
+
+    <path
+        android:fillColor="#FF8F6F"
+        android:pathData="M174,106 H290 A8,8 0 0 1 298,114 V126 A8,8 0 0 1 290,134 H174 A8,8 0 0 1 166,126 V114 A8,8 0 0 1 174,106 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M214,117 H250 V123 H214 Z"/>
+</vector>

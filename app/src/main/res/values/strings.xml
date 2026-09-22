@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Mis Cuentas</string>
+    <string name="widget_description">Saldo disponible y registro rápido de ingresos y gastos.</string>
+    <string name="widget_compact_description">Lo esencial: saldo disponible y variación del día siempre visible.</string>
+    <string name="widget_standard_description">Más información: saldo, gráfico de actividad, ingresos, gastos y botones rápidos.</string>
+    <string name="widget_extended_description">Control completo: desglose financiero con 4 accesos directos rápidos.</string>
+</resources>

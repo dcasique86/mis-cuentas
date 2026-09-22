@@ -1,0 +1,6 @@
+{
+  "name": "Mis Cuentas",
+  "description": "Tu dinero, en orden. Registro ágil de ingresos, gastos, deudas y finanzas personales.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
