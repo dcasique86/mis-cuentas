@@ -43,10 +43,14 @@ fun TransactionItemRow(
     modifier: Modifier = Modifier
 ) {
     val isIncome = transaction.isIncome
-    val iconColor = if (isIncome) DeepGreen else Coral
-    val containerColor = if (isIncome) SoftGreenLight else CoralLight
-    val amountColor = if (isIncome) DeepGreen else TextPrimary
-    val amountPrefix = if (isIncome) "+$" else if (transaction.amount > 0) "-$" else "$"
+    val iconColor = if (isIncome) Color(0xFF3B6758) else Color(0xFFE26A4A)
+    val containerColor = if (isIncome) Color(0xFFE3EFE9) else Color(0xFFFDECE6)
+    val amountColor = if (isIncome) Color(0xFF267D5B) else Color(0xFFDC4731)
+    val formattedAmount = if (isIncome) {
+        "+ ${Formatters.formatMoney(transaction.amount)}"
+    } else {
+        "- ${Formatters.formatMoney(transaction.amount)}"
+    }
 
     Surface(
         modifier = modifier
@@ -107,10 +111,10 @@ fun TransactionItemRow(
             // Amount & Time
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = Formatters.formatMoney(transaction.amount),
+                    text = formattedAmount,
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = amountColor,
                     textAlign = TextAlign.End
                 )

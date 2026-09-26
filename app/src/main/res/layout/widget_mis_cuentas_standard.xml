@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_widget_light_card"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="12dp">
 
-    <!-- Header -->
+    <!-- Header: Logo, Title & Refresh -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,15 +15,15 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_widget_app_logo_mark"
-            android:contentDescription="Mis Cuentas Logo" />
+            android:contentDescription="Mis Cuentas" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -31,8 +31,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mis Cuentas"
-                android:textColor="#1A2421"
-                android:textSize="13sp"
+                android:textColor="#0F4D3C"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -40,194 +40,174 @@
                 android:layout_height="wrap_content"
                 android:text="Tu dinero, en orden."
                 android:textColor="#7A8B82"
-                android:textSize="10sp" />
+                android:textSize="9sp" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/widget_standard_btn_refresh"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:padding="4dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:padding="3dp"
             android:src="@drawable/ic_widget_refresh"
             android:contentDescription="Actualizar" />
     </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="8dp" />
+        android:layout_height="6dp" />
 
-    <!-- Balance Row with Mini Chart on Right -->
+    <!-- Center Section: Left (Disponible & Variation) + Right (Metrics Box) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- Left: Disponible, Balance, and Today's Diff -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.2"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Efectivo disponible"
+                android:textColor="#7A8B82"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/widget_standard_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$ 0"
-                android:textColor="#1A2421"
-                android:textSize="24sp"
+                android:textColor="#0F4D3C"
+                android:textSize="21sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/widget_standard_today_diff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="1dp"
                 android:text="— $0 hoy"
                 android:textColor="#1E7E45"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Decorative Activity Bars matching screenshot -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:gravity="bottom"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="5dp"
-                android:layout_height="14dp"
-                android:layout_marginEnd="3dp"
-                android:background="#A3E0BA" />
-
-            <View
-                android:layout_width="5dp"
-                android:layout_height="22dp"
-                android:layout_marginEnd="3dp"
-                android:background="#64C893" />
-
-            <View
-                android:layout_width="5dp"
-                android:layout_height="18dp"
-                android:layout_marginEnd="3dp"
-                android:background="#3DA873" />
-
-            <View
-                android:layout_width="5dp"
-                android:layout_height="30dp"
-                android:background="#1E7E45" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
-
-    <!-- Metrics Row (Ingresos and Gastos) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <!-- Ingresos -->
+        <!-- Right: Neatly Organized Metrics Box (Ingresos & Gastos) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_weight="1.0"
+            android:background="@drawable/bg_widget_metrics_box"
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <FrameLayout
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/bg_widget_circle_green">
-
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_arrow_up"
-                    android:contentDescription="Ingreso" />
-            </FrameLayout>
-
+            <!-- Ingresos Row -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ingresos"
-                    android:textColor="#7A8B82"
-                    android:textSize="10sp" />
+                <FrameLayout
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:background="@drawable/bg_widget_circle_green">
 
-                <TextView
-                    android:id="@+id/widget_standard_income"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_widget_arrow_up"
+                        android:contentDescription="Ingreso" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="$ 0"
-                    android:textColor="#1A2421"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ingresos"
+                        android:textColor="#7A8B82"
+                        android:textSize="9sp" />
+
+                    <TextView
+                        android:id="@+id/widget_standard_income"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$ 0"
+                        android:textColor="#1E7E45"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Gastos -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="4dp" />
 
-            <FrameLayout
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:background="@drawable/bg_widget_circle_coral">
-
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_arrow_down"
-                    android:contentDescription="Gasto" />
-            </FrameLayout>
-
+            <!-- Gastos Row -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gastos"
-                    android:textColor="#7A8B82"
-                    android:textSize="10sp" />
+                <FrameLayout
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:background="@drawable/bg_widget_circle_coral">
 
-                <TextView
-                    android:id="@+id/widget_standard_expense"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_widget_arrow_down"
+                        android:contentDescription="Gasto" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="$ 0"
-                    android:textColor="#1A2421"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gastos"
+                        android:textColor="#7A8B82"
+                        android:textSize="9sp" />
+
+                    <TextView
+                        android:id="@+id/widget_standard_expense"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$ 0"
+                        android:textColor="#D93025"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="12dp" />
+        android:layout_height="8dp" />
 
-    <!-- Action Buttons -->
+    <!-- Bottom Actions Row: + Ingreso and − Gasto -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -236,27 +216,27 @@
         <TextView
             android:id="@+id/widget_standard_btn_income"
             android:layout_width="0dp"
-            android:layout_height="38dp"
+            android:layout_height="34dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_widget_btn_green_pill"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/bg_widget_income_btn"
             android:gravity="center"
             android:text="+ Ingreso"
             android:textColor="#FFFFFF"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/widget_standard_btn_expense"
             android:layout_width="0dp"
-            android:layout_height="38dp"
+            android:layout_height="34dp"
             android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_widget_btn_coral_pill"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/bg_widget_expense_btn"
             android:gravity="center"
-            android:text="— Gasto"
+            android:text="− Gasto"
             android:textColor="#FFFFFF"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
 

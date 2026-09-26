@@ -1,5 +1,7 @@
 package com.example.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,17 +21,24 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,22 +59,23 @@ import com.example.ui.components.AddDebtDialog
 import com.example.ui.components.DebtDetailDialog
 import com.example.ui.components.Formatters
 import com.example.ui.components.PayDebtDialog
+import com.example.ui.theme.CoralRed
+import com.example.ui.theme.CoralRedLight
+import com.example.ui.theme.ElectricBlue
+import com.example.ui.theme.ElectricBlueLight
+import com.example.ui.theme.EmeraldGreen
+import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.SurfaceWhite
+import com.example.ui.theme.TitaniumBorder
+import com.example.ui.theme.TitaniumDarkCard
+import com.example.ui.theme.TitaniumDivider
+import com.example.ui.theme.TitaniumLightBg
+import com.example.ui.theme.TitaniumTextPrimary
+import com.example.ui.theme.TitaniumTextSecondary
 import kotlinx.coroutines.flow.Flow
-import androidx.compose.runtime.collectAsState
 import java.text.SimpleDateFormat
 import java.util.Locale
-import com.example.ui.theme.Coral
-import com.example.ui.theme.CoralLight
-import com.example.ui.theme.Cream
-import com.example.ui.theme.DeepGreen
-import com.example.ui.theme.NeutralGray
-import com.example.ui.theme.PoppinsFontFamily
-import com.example.ui.theme.Sand
-import com.example.ui.theme.SoftGreen
-import com.example.ui.theme.SoftGreenLight
-import com.example.ui.theme.SuccessGreen
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.TextSecondary
 
 @Composable
 fun DebtsScreen(
@@ -76,188 +87,307 @@ fun DebtsScreen(
     onDeleteDebt: (DebtEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedTabIsIOwe by remember(initialTabIsIOwe) { mutableStateOf(initialTabIsIOwe) } // true: Por pagar, false: Por cobrar
+    // selectedTabIsIOwe: true -> "Debo" (Por pagar), false -> "Me deben" (Por cobrar)
+    var selectedTabIsIOwe by remember(initialTabIsIOwe) { mutableStateOf(initialTabIsIOwe) }
     var showAddDebtDialog by remember { mutableStateOf(false) }
     var selectedDebtForPayment by remember { mutableStateOf<DebtEntity?>(null) }
     var selectedDebtForDetail by remember { mutableStateOf<DebtEntity?>(null) }
 
     val filteredDebts = debts.filter { it.isIOwe == selectedTabIsIOwe }
     val totalPending = filteredDebts.sumOf { it.remainingAmount }
+    val totalOriginal = filteredDebts.sumOf { it.totalAmount }
     val totalPaid = filteredDebts.sumOf { it.paidAmount }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Cream)
-            .padding(horizontal = 20.dp)
-    ) {
-        Spacer(modifier = Modifier.height(14.dp))
+    val countMeDeben = debts.count { !it.isIOwe }
+    val countDebo = debts.count { it.isIOwe }
 
-        // Top Bar: Title & + Add Button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Deudas",
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 26.sp,
-                color = TextPrimary
-            )
+    val recoveryPercentage = if (totalOriginal > 0) ((totalPaid / totalOriginal) * 100).toInt() else 0
 
-            // Circle + Button in SoftGreen
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(SoftGreen)
-                    .clickable { showAddDebtDialog = true }
-                    .testTag("add_debt_button"),
-                contentAlignment = Alignment.Center
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = TitaniumLightBg,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { showAddDebtDialog = true },
+                containerColor = ElectricBlue,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(16.dp),
+                elevation = androidx.compose.material3.FloatingActionButtonDefaults.elevation(3.dp),
+                modifier = Modifier.testTag("add_debt_button")
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Agregar deuda",
-                    tint = DeepGreen,
-                    modifier = Modifier.size(24.dp)
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = if (selectedTabIsIOwe) "Nueva Deuda" else "Nuevo Préstamo",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Segmented Control: [Por pagar] [Por cobrar]
-        Row(
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(Sand)
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(if (selectedTabIsIOwe) DeepGreen else Color.Transparent)
-                    .clickable { selectedTabIsIOwe = true }
-                    .padding(vertical = 10.dp)
-                    .testTag("tab_por_pagar"),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Por pagar",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 13.sp,
-                    color = if (selectedTabIsIOwe) Color.White else TextSecondary
-                )
-            }
+            Spacer(modifier = Modifier.height(14.dp))
 
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(if (!selectedTabIsIOwe) DeepGreen else Color.Transparent)
-                    .clickable { selectedTabIsIOwe = false }
-                    .padding(vertical = 10.dp)
-                    .testTag("tab_por_cobrar"),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Por cobrar",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 13.sp,
-                    color = if (!selectedTabIsIOwe) Color.White else TextSecondary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Summary Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
+            // -------------------------------------------------------------
+            // Top Bar: Title & Subtitle
+            // -------------------------------------------------------------
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
-                        text = if (selectedTabIsIOwe) "Total pendiente por pagar" else "Total pendiente por cobrar",
-                        fontFamily = PoppinsFontFamily,
-                        fontSize = 12.sp,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = Formatters.formatMoney(totalPending),
+                        text = "PRÉSTAMOS Y COBROS",
                         fontFamily = PoppinsFontFamily,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        color = if (selectedTabIsIOwe) Coral else DeepGreen
+                        fontSize = 11.sp,
+                        letterSpacing = 0.8.sp,
+                        color = TitaniumTextSecondary
+                    )
+                    Text(
+                        text = "Deudas",
+                        fontFamily = PoppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = TitaniumTextPrimary
                     )
                 }
+            }
 
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = Sand
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // -------------------------------------------------------------
+            // Segmented Control: [↑ Me deben 4] [↓ Debo 2]
+            // -------------------------------------------------------------
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(SurfaceWhite)
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                // Tab: Me deben (Por cobrar)
+                val isMeDeben = !selectedTabIsIOwe
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isMeDeben) TitaniumDarkCard else Color.Transparent)
+                        .clickable { selectedTabIsIOwe = false }
+                        .padding(vertical = 10.dp)
+                        .testTag("tab_por_cobrar"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowUpward,
+                            contentDescription = null,
+                            tint = if (isMeDeben) EmeraldGreen else TitaniumTextSecondary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Me deben",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = if (isMeDeben) Color.White else TitaniumTextSecondary
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isMeDeben) Color(0xFF2C2C2E) else TitaniumLightBg
+                        ) {
+                            Text(
+                                text = "$countMeDeben",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp,
+                                color = if (isMeDeben) EmeraldGreen else TitaniumTextPrimary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Tab: Debo (Por pagar)
+                val isDebo = selectedTabIsIOwe
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isDebo) TitaniumDarkCard else Color.Transparent)
+                        .clickable { selectedTabIsIOwe = true }
+                        .padding(vertical = 10.dp)
+                        .testTag("tab_por_pagar"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDownward,
+                            contentDescription = null,
+                            tint = if (isDebo) CoralRed else TitaniumTextSecondary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Debo",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = if (isDebo) Color.White else TitaniumTextSecondary
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (isDebo) Color(0xFF2C2C2E) else TitaniumLightBg
+                        ) {
+                            Text(
+                                text = "$countDebo",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp,
+                                color = if (isDebo) CoralRed else TitaniumTextPrimary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // -------------------------------------------------------------
+            // Hero Card: TOTAL POR COBRAR / PAGAR (Titanium Dark)
+            // -------------------------------------------------------------
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = TitaniumDarkCard),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (selectedTabIsIOwe) "TOTAL POR PAGAR" else "TOTAL POR COBRAR",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp,
+                            color = Color(0xFF8E8E93)
+                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = Color(0xFF1E382A)
+                        ) {
+                            Text(
+                                text = "$recoveryPercentage% recuperado",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                color = EmeraldGreen,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = Formatters.formatMoney(totalPending),
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp,
+                            color = Color.White,
+                            letterSpacing = (-0.5).sp
+                        )
+                        Text(
+                            text = "COP",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp,
+                            color = Color(0xFF8E8E93),
+                            modifier = Modifier.padding(bottom = 5.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Recaudado: ${Formatters.formatMoney(totalPaid)} COP • Total inicial: ${Formatters.formatMoney(totalOriginal)}",
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 11.sp,
+                        color = Color(0xFFAEAEB2)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // -------------------------------------------------------------
+            // Debts List
+            // -------------------------------------------------------------
+            if (filteredDebts.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 80.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "${filteredDebts.size} cuentas",
+                        text = if (selectedTabIsIOwe) "No tienes deudas por pagar registradas."
+                        else "No tienes cobros pendientes registrados.",
                         fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp,
-                        color = TextPrimary,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        fontSize = 13.sp,
+                        color = TitaniumTextSecondary,
+                        textAlign = TextAlign.Center
                     )
                 }
-            }
-        }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(filteredDebts, key = { it.id }) { debt ->
+                        CupertinoDebtCardItem(
+                            debt = debt,
+                            onCardClick = { selectedDebtForDetail = debt },
+                            onPayClick = { selectedDebtForPayment = debt }
+                        )
+                    }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Debts List
-        if (filteredDebts.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (selectedTabIsIOwe) "No tienes deudas por pagar registradas."
-                    else "No tienes deudas por cobrar registradas.",
-                    fontFamily = PoppinsFontFamily,
-                    fontSize = 14.sp,
-                    color = TextSecondary,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(filteredDebts, key = { it.id }) { debt ->
-                    DebtCardItem(
-                        debt = debt,
-                        onCardClick = { selectedDebtForDetail = debt },
-                        onPayClick = { selectedDebtForPayment = debt }
-                    )
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(80.dp))
+                    item {
+                        Spacer(modifier = Modifier.height(90.dp))
+                    }
                 }
             }
         }
@@ -308,45 +438,48 @@ fun DebtsScreen(
 }
 
 @Composable
-private fun DebtCardItem(
+private fun CupertinoDebtCardItem(
     debt: DebtEntity,
     onCardClick: () -> Unit,
     onPayClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val initial = debt.name.trim().take(1).uppercase()
     val isCreditCard = debt.name.contains("tarjeta", ignoreCase = true)
     val progress = if (debt.totalAmount > 0) (debt.paidAmount / debt.totalAmount).toFloat().coerceIn(0f, 1f) else 0f
+    val percentInt = (progress * 100).toInt()
     val dateFormat = remember { SimpleDateFormat("d MMM", Locale("es", "CO")) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onCardClick)
             .testTag("debt_card_${debt.id}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Top Row: Avatar, Name & Concept, RESTA amount
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Circle with Initial or Card Icon
+                // Avatar circle
                 Box(
                     modifier = Modifier
-                        .size(46.dp)
+                        .size(44.dp)
                         .clip(CircleShape)
-                        .background(if (debt.isIOwe) SoftGreenLight else CoralLight),
+                        .background(if (debt.isIOwe) CoralRedLight else EmeraldGreenLight),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isCreditCard) {
                         Icon(
                             imageVector = Icons.Default.CreditCard,
                             contentDescription = null,
-                            tint = DeepGreen,
-                            modifier = Modifier.size(24.dp)
+                            tint = if (debt.isIOwe) CoralRed else EmeraldGreen,
+                            modifier = Modifier.size(22.dp)
                         )
                     } else {
                         Text(
@@ -354,109 +487,157 @@ private fun DebtCardItem(
                             fontFamily = PoppinsFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
-                            color = if (debt.isIOwe) DeepGreen else Coral
+                            color = if (debt.isIOwe) CoralRed else EmeraldGreen
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.width(14.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = debt.name,
                         fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = TextPrimary
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        color = TitaniumTextPrimary
                     )
                     Text(
-                        text = if (debt.isIOwe) "Debe: ${Formatters.formatMoney(debt.totalAmount)}" else "Prestado: ${Formatters.formatMoney(debt.totalAmount)}",
+                        text = if (debt.isIOwe) "Deuda pendiente" else "Préstamo otorgado",
                         fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 13.sp,
-                        color = TextSecondary
+                        fontSize = 12.sp,
+                        color = TitaniumTextSecondary
                     )
                 }
 
-                // Action button: Abonar / Cobrar
-                Surface(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .clickable(onClick = onPayClick),
-                    color = Sand
-                ) {
+                Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = if (debt.isIOwe) "Abonar" else "Cobrar",
+                        text = "RESTA",
                         fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        color = DeepGreen,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        letterSpacing = 0.6.sp,
+                        color = TitaniumTextSecondary
+                    )
+                    Text(
+                        text = Formatters.formatMoney(debt.remainingAmount),
+                        fontFamily = PoppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = if (debt.isIOwe) CoralRed else TitaniumTextPrimary
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Subtitle stats: Pagado & Pendiente
+            // Progress Bar & Percentage
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Pagado: ${Formatters.formatMoney(debt.paidAmount)}",
+                    text = "$percentInt%  Pagado: ${Formatters.formatMoney(debt.paidAmount)} de ${Formatters.formatMoney(debt.totalAmount)}",
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "Pendiente: ${Formatters.formatMoney(debt.remainingAmount)}",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    color = if (debt.remainingAmount <= 0) SuccessGreen else if (debt.isIOwe) Coral else DeepGreen
+                    fontSize = 11.sp,
+                    color = TitaniumTextSecondary
                 )
             }
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Progress bar
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(5.dp)
+                    .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = if (debt.isIOwe) SoftGreen else DeepGreen,
-                trackColor = Sand
+                color = if (debt.isIOwe) CoralRed else EmeraldGreen,
+                trackColor = TitaniumLightBg
             )
 
-            // Extra context: Last payment date and days pending
-            if (debt.lastPaymentDate != null || (!debt.isIOwe && !debt.isSettled && debt.pendingDays > 0)) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (debt.lastPaymentDate != null) {
-                        Text(
-                            text = "Último abono: ${dateFormat.format(debt.lastPaymentDate)}",
-                            fontFamily = PoppinsFontFamily,
-                            fontSize = 11.sp,
-                            color = TextSecondary
-                        )
-                    } else {
-                        Spacer(modifier = Modifier.width(1.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Bottom Actions: Status pill + WhatsApp button + Abonar button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Status pill
+                if (debt.lastPaymentDate != null) {
+                    Text(
+                        text = "Último: ${dateFormat.format(debt.lastPaymentDate)}",
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 11.sp,
+                        color = TitaniumTextSecondary
+                    )
+                } else {
+                    Text(
+                        text = if (debt.pendingDays > 0) "⏱ Hace ${debt.pendingDays}d" else "Al día",
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 11.sp,
+                        color = if (debt.pendingDays > 15) CoralRed else TitaniumTextSecondary
+                    )
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // WhatsApp share button
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable {
+                                val message = if (debt.isIOwe) {
+                                    "Hola ${debt.name}, te escribo respecto al saldo pendiente de ${Formatters.formatMoney(debt.remainingAmount)}."
+                                } else {
+                                    "Hola ${debt.name}, cordial saludo. Te recuerdo el saldo pendiente de ${Formatters.formatMoney(debt.remainingAmount)} de nuestro préstamo. ¡Gracias!"
+                                }
+                                val uri = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(message)}")
+                                val intent = Intent(Intent.ACTION_VIEW, uri)
+                                try {
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {}
+                            },
+                        shape = RoundedCornerShape(10.dp),
+                        color = TitaniumLightBg
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Compartir",
+                                tint = TitaniumTextPrimary,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Text(
+                                text = "WhatsApp",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 11.sp,
+                                color = TitaniumTextPrimary
+                            )
+                        }
                     }
 
-                    if (!debt.isIOwe && !debt.isSettled && debt.pendingDays > 0) {
+                    // + Abonar button
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable(onClick = onPayClick),
+                        shape = RoundedCornerShape(10.dp),
+                        color = ElectricBlue
+                    ) {
                         Text(
-                            text = "⏱ Pendiente hace ${debt.pendingDays}d",
+                            text = "+ Abonar",
                             fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 11.sp,
-                            color = Coral
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }

@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,39 +8,58 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,64 +69,121 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.entity.AccountEntity
+import com.example.data.entity.AccountType
 import com.example.data.entity.AccountingType
+import com.example.data.entity.AutoRuleEntity
 import com.example.data.entity.FavoriteEntity
 import com.example.data.entity.TransactionEntity
-import com.example.ui.theme.Coral
-import com.example.ui.theme.CoralLight
-import com.example.ui.theme.Cream
-import com.example.ui.theme.DeepGreen
-import com.example.ui.theme.NeutralGray
+import com.example.ui.theme.CoralRed
+import com.example.ui.theme.CoralRedLight
+import com.example.ui.theme.ElectricBlue
+import com.example.ui.theme.ElectricBlueLight
+import com.example.ui.theme.EmeraldGreen
+import com.example.ui.theme.EmeraldGreenLight
 import com.example.ui.theme.PoppinsFontFamily
-import com.example.ui.theme.Sand
-import com.example.ui.theme.SoftGreen
-import com.example.ui.theme.SoftGreenLight
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.SurfaceWhite
+import com.example.ui.theme.TitaniumBorder
+import com.example.ui.theme.TitaniumDarkCard
+import com.example.ui.theme.TitaniumDivider
+import com.example.ui.theme.TitaniumLightBg
+import com.example.ui.theme.TitaniumTextPrimary
+import com.example.ui.theme.TitaniumTextSecondary
+import com.example.util.VoiceInputParser
 
 enum class TransactionSheetMode {
     EXPENSE, INCOME, TRANSFER
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class CategoryItem(val name: String, val icon: ImageVector)
+data class PaymentMethodItem(val name: String, val icon: ImageVector)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddTransactionSheet(
     initialMode: TransactionSheetMode = TransactionSheetMode.EXPENSE,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     favorites: List<FavoriteEntity> = emptyList(),
+    rules: List<AutoRuleEntity> = emptyList(),
+    accounts: List<AccountEntity> = emptyList(),
     onSaveFavorite: ((FavoriteEntity) -> Unit)? = null,
     onDeleteFavorite: ((FavoriteEntity) -> Unit)? = null,
     onDismiss: () -> Unit,
     onSave: (TransactionEntity) -> Unit
 ) {
-    var mode by remember { mutableStateOf(initialMode) }
+    var mode by remember {
+        mutableStateOf(initialMode)
+    }
+
     var amountText by remember { mutableStateOf("") }
     var concept by remember { mutableStateOf("") }
-    var paymentMethod by remember { mutableStateOf("Efectivo") }
+    var showVoiceDialog by remember { mutableStateOf(false) }
+    var autoMatchedCategory by remember { mutableStateOf<String?>(null) }
+    var paymentMethod by remember {
+        mutableStateOf(if (initialMode == TransactionSheetMode.TRANSFER) "Transferencia" else "Efectivo")
+    }
     var note by remember { mutableStateOf("") }
-    var showMoreAccountingTypes by remember { mutableStateOf(false) }
 
     val expenseCategories = listOf(
-        "Comida", "Transporte", "Arriendo", "Servicios",
-        "Compras", "Proveedores", "Deudas", "Salud",
-        "Entretenimiento", "Otros"
+        CategoryItem("Comida", Icons.Default.Restaurant),
+        CategoryItem("Transporte", Icons.Default.DirectionsCar),
+        CategoryItem("Hogar", Icons.Default.Home),
+        CategoryItem("Trabajo", Icons.Default.Work),
+        CategoryItem("Tienda", Icons.Default.ShoppingCart),
+        CategoryItem("Ropa", Icons.Default.Checkroom)
     )
+
     val incomeCategories = listOf(
-        "Venta", "Trabajo", "Préstamo", "Cobro", "Transferencia", "Otro"
+        CategoryItem("Venta", Icons.Default.ShoppingBag),
+        CategoryItem("Trabajo", Icons.Default.Work),
+        CategoryItem("Cobro", Icons.Default.Payments),
+        CategoryItem("Transferencia", Icons.Default.SwapHoriz),
+        CategoryItem("Otro", Icons.Default.Home)
     )
+
+    val paymentMethodsList = if (accounts.isNotEmpty()) {
+        val mapped = accounts.map { acc ->
+            val icon = when (acc.type) {
+                AccountType.CASH.name -> Icons.Default.Payments
+                AccountType.WALLET.name -> Icons.Default.Smartphone
+                AccountType.BANK.name -> Icons.Default.SwapHoriz
+                AccountType.CREDIT_CARD.name -> Icons.Default.CreditCard
+                else -> Icons.Default.Payments
+            }
+            PaymentMethodItem(acc.name, icon)
+        }
+        if (mode == TransactionSheetMode.TRANSFER && mapped.none { it.name.contains("Transfer", ignoreCase = true) }) {
+            listOf(PaymentMethodItem("Transferencia", Icons.Default.SwapHoriz)) + mapped
+        } else {
+            mapped
+        }
+    } else {
+        listOf(
+            PaymentMethodItem("Efectivo", Icons.Default.Payments),
+            PaymentMethodItem("Nequi", Icons.Default.Smartphone),
+            PaymentMethodItem("Bancolombia", Icons.Default.SwapHoriz),
+            PaymentMethodItem("Tarjeta", Icons.Default.CreditCard)
+        )
+    }
 
     var selectedCategory by remember(mode) {
         mutableStateOf(
-            if (mode == TransactionSheetMode.EXPENSE) "Comida"
-            else if (mode == TransactionSheetMode.INCOME) "Venta"
-            else "Transferencia"
+            if (mode == TransactionSheetMode.TRANSFER) "Transferencia"
+            else if (mode == TransactionSheetMode.EXPENSE) "Comida"
+            else "Venta"
         )
     }
 
@@ -120,43 +197,80 @@ fun AddTransactionSheet(
         )
     }
 
-    val quickConcepts = if (mode == TransactionSheetMode.EXPENSE) {
-        listOf("Almuerzo", "Envío", "Transporte", "Café", "Mercado", "Chuzo", "Servicios")
-    } else {
-        listOf("Venta pantaloneta", "Licra", "Trabajo", "Abono", "Honorarios", "Préstamo")
-    }
-
-    val quickAmounts = listOf(5000, 10000, 20000, 50000, 100000)
-    val paymentMethods = listOf("Efectivo", "Transferencia", "Nequi", "Tarjeta")
-
-    val isExpense = mode == TransactionSheetMode.EXPENSE
-    val themeAccentColor = if (isExpense) Coral else if (mode == TransactionSheetMode.INCOME) SoftGreen else DeepGreen
+    val quickAmounts = listOf(5000, 10000, 20000, 50000)
     val isFormValid = amountText.toDoubleOrNull()?.let { it > 0 } == true && concept.isNotBlank()
 
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val isImeVisible = WindowInsets.isImeVisible
+
+    // Intercept back gesture on Android phone so it hides the keyboard instead of closing the module
+    BackHandler(enabled = true) {
+        if (isImeVisible) {
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        } else if (amountText.isNotBlank() || concept.isNotBlank()) {
+            // Keep sheet open to protect data while user is registering income/expense
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        } else {
+            // Only dismiss when empty and keyboard is already hidden
+            onDismiss()
+        }
+    }
+
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            if (isImeVisible) {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            } else {
+                onDismiss()
+            }
+        },
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = false
+        ),
         sheetState = sheetState,
-        containerColor = Cream,
-        tonalElevation = 6.dp
+        containerColor = TitaniumLightBg,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 4.dp)
+                    .width(42.dp)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(Color(0xFFC7C7CC))
+            )
+        }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .navigationBarsPadding()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
+                .padding(horizontal = 20.dp, vertical = 6.dp)
         ) {
-            // Header: Title & Close
+            // Header: Title & Close Button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Registrar movimiento",
+                    text = "Nuevo Registro",
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 19.sp,
-                    color = TextPrimary
+                    fontSize = 20.sp,
+                    color = TitaniumTextPrimary
                 )
                 IconButton(
                     onClick = onDismiss,
@@ -165,29 +279,31 @@ fun AddTransactionSheet(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Cerrar",
-                        tint = TextSecondary
+                        tint = TitaniumTextSecondary
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Fast Mode Selector Tabs
+            // -------------------------------------------------------------
+            // Mode Selector: [↓ Gasto] [↑ Ingreso] [⇄ Traslado]
+            // -------------------------------------------------------------
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Sand)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(SurfaceWhite)
                     .padding(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Gasto Tab
-                val isGastoActive = mode == TransactionSheetMode.EXPENSE
+                // 1. Gasto
+                val isGasto = mode == TransactionSheetMode.EXPENSE
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(if (isGastoActive) Coral else Color.Transparent)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isGasto) CoralRedLight else Color.Transparent)
                         .clickable {
                             mode = TransactionSheetMode.EXPENSE
                             selectedCategory = "Comida"
@@ -196,22 +312,33 @@ fun AddTransactionSheet(
                         .padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "− Gasto",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = if (isGastoActive) Color.White else TextSecondary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = null,
+                            tint = if (isGasto) CoralRed else TitaniumTextSecondary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Gasto",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = if (isGasto) CoralRed else TitaniumTextSecondary
+                        )
+                    }
                 }
 
-                // Ingreso Tab
-                val isIngresoActive = mode == TransactionSheetMode.INCOME
+                // 2. Ingreso
+                val isIngreso = mode == TransactionSheetMode.INCOME
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(if (isIngresoActive) SoftGreen else Color.Transparent)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isIngreso) EmeraldGreenLight else Color.Transparent)
                         .clickable {
                             mode = TransactionSheetMode.INCOME
                             selectedCategory = "Venta"
@@ -220,113 +347,237 @@ fun AddTransactionSheet(
                         .padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "+ Ingreso",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = if (isIngresoActive) DeepGreen else TextSecondary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = if (isIngreso) EmeraldGreen else TitaniumTextSecondary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Ingreso",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = if (isIngreso) EmeraldGreen else TitaniumTextSecondary
+                        )
+                    }
                 }
 
-                // Transferencia Tab
-                val isTransferActive = mode == TransactionSheetMode.TRANSFER
+                // 3. Traslado
+                val isTransfer = mode == TransactionSheetMode.TRANSFER
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(if (isTransferActive) DeepGreen else Color.Transparent)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isTransfer) ElectricBlueLight else Color.Transparent)
                         .clickable {
                             mode = TransactionSheetMode.TRANSFER
                             selectedCategory = "Transferencia"
                             selectedAccountingType = AccountingType.TRANSFERENCIA
+                            paymentMethod = "Transferencia"
                         }
                         .padding(vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "⇄ Transferir",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = if (isTransferActive) Color.White else TextSecondary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SwapHoriz,
+                            contentDescription = null,
+                            tint = if (isTransfer) ElectricBlue else TitaniumTextSecondary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Traslado",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = if (isTransfer) ElectricBlue else TitaniumTextSecondary
+                        )
+                    }
                 }
             }
 
-            // Quick Favorites Row
-            if (favorites.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(14.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "★ Favoritos rápidos",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        color = DeepGreen
-                    )
-                    Text(
-                        text = "Prellena en 1 toque",
-                        fontFamily = PoppinsFontFamily,
-                        fontSize = 11.sp,
-                        color = TextSecondary
-                    )
-                }
-                Spacer(modifier = Modifier.height(6.dp))
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(favorites) { fav ->
-                        val isCurrent = concept.equals(fav.name, ignoreCase = true)
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = if (isCurrent) SoftGreenLight else Color.White,
-                            border = BorderStroke(1.dp, if (isCurrent) SoftGreen else NeutralGray),
-                            modifier = Modifier.clickable {
-                                concept = fav.name
-                                selectedCategory = fav.category
-                                paymentMethod = fav.paymentMethod
-                                mode = if (fav.isIncome) TransactionSheetMode.INCOME else TransactionSheetMode.EXPENSE
-                                if (fav.amount != null && fav.amount > 0) {
-                                    amountText = if (fav.amount % 1.0 == 0.0) {
-                                        fav.amount.toInt().toString()
-                                    } else {
-                                        fav.amount.toString()
-                                    }
-                                }
-                                runCatching {
-                                    selectedAccountingType = AccountingType.valueOf(fav.type)
-                                }.onFailure {
-                                    selectedAccountingType = if (fav.isIncome) AccountingType.VENTA else AccountingType.GASTO
-                                }
-                            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // -------------------------------------------------------------
+            // Amount Container Card (White Card with Border)
+            // -------------------------------------------------------------
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                border = BorderStroke(1.dp, TitaniumBorder),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "IMPORTE TOTAL",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp,
+                            color = TitaniumTextSecondary
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = TitaniumLightBg,
+                                modifier = Modifier.clickable {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                }
                             ) {
-                                Text(
-                                    text = "★ ${fav.name}",
-                                    fontFamily = PoppinsFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 13.sp,
-                                    color = DeepGreen
-                                )
-                                if (fav.amount != null && fav.amount > 0) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = ElectricBlue,
+                                        modifier = Modifier.size(12.dp)
+                                    )
                                     Text(
-                                        text = "$ ${fav.amount.toInt()}",
+                                        text = "Listo",
                                         fontFamily = PoppinsFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 12.sp,
-                                        color = if (fav.isIncome) DeepGreen else Coral
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp,
+                                        color = ElectricBlue
                                     )
                                 }
+                            }
+                            Text(
+                                text = "COP",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                color = TitaniumTextSecondary
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "$",
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 34.sp,
+                                color = TitaniumTextPrimary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            BasicTextField(
+                                value = amountText,
+                                onValueChange = { input ->
+                                    val digits = input.filter { it.isDigit() }
+                                    if (digits.length <= 12) {
+                                        amountText = digits
+                                    }
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                    }
+                                ),
+                                singleLine = true,
+                                visualTransformation = ThousandsSeparatorVisualTransformation(),
+                                textStyle = TextStyle(
+                                    fontFamily = PoppinsFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 36.sp,
+                                    color = TitaniumTextPrimary
+                                ),
+                                cursorBrush = SolidColor(ElectricBlue),
+                                decorationBox = { innerTextField ->
+                                    if (amountText.isEmpty()) {
+                                        Text(
+                                            text = "0",
+                                            fontFamily = PoppinsFontFamily,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 36.sp,
+                                            color = Color(0xFFC7C7CC)
+                                        )
+                                    }
+                                    innerTextField()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("amount_input")
+                            )
+                        }
+
+                        if (amountText.isNotEmpty()) {
+                            IconButton(
+                                onClick = { amountText = "" },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel,
+                                    contentDescription = "Borrar monto",
+                                    tint = TitaniumTextSecondary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Quick amounts pills (+ $ 5.000, + $ 10.000, + $ 20.000, + $ 50.000)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        quickAmounts.forEach { quickVal ->
+                            Surface(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        val current = amountText.toLongOrNull() ?: 0L
+                                        amountText = (current + quickVal).toString()
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                color = TitaniumLightBg
+                            ) {
+                                Text(
+                                    text = "+ ${Formatters.formatMoney(quickVal.toDouble())}",
+                                    fontFamily = PoppinsFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp,
+                                    color = TitaniumTextPrimary,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                )
                             }
                         }
                     }
@@ -335,330 +586,262 @@ fun AddTransactionSheet(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Big Amount Input ($ ________)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Monto",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "$",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 32.sp,
-                        color = if (mode == TransactionSheetMode.EXPENSE) Coral else DeepGreen,
-                        modifier = Modifier.padding(end = 6.dp)
-                    )
-                    OutlinedTextField(
-                        value = amountText,
-                        onValueChange = { input ->
-                            // keep only digits
-                            amountText = input.filter { it.isDigit() }
-                        },
-                        placeholder = {
-                            Text(
-                                "0",
-                                fontFamily = PoppinsFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 32.sp,
-                                color = NeutralGray
-                            )
-                        },
-                        textStyle = androidx.compose.ui.text.TextStyle(
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 32.sp,
-                            color = TextPrimary,
-                            textAlign = TextAlign.Start
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .testTag("amount_input")
-                    )
-                }
+            // -------------------------------------------------------------
+            // Concepto
+            // -------------------------------------------------------------
+            Text(
+                text = "Concepto",
+                fontFamily = PoppinsFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = TitaniumTextPrimary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                // Quick amounts chips
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = SurfaceWhite,
+                border = BorderStroke(1.dp, TitaniumBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(top = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    quickAmounts.forEach { quickVal ->
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable {
-                                    val current = amountText.toLongOrNull() ?: 0L
-                                    amountText = (current + quickVal).toString()
-                                },
-                            color = Sand
+                    Icon(
+                        imageVector = Icons.Default.Notes,
+                        contentDescription = null,
+                        tint = TitaniumTextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    BasicTextField(
+                        value = concept,
+                        onValueChange = { input ->
+                            concept = input
+                            val matched = VoiceInputParser.matchCategory(input, rules)
+                            if (matched != null) {
+                                selectedCategory = matched.targetCategory
+                                autoMatchedCategory = matched.targetCategory
+                                if (matched.isIncome) {
+                                    mode = TransactionSheetMode.INCOME
+                                }
+                            } else {
+                                autoMatchedCategory = null
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 13.sp,
+                            color = TitaniumTextPrimary
+                        ),
+                        cursorBrush = SolidColor(ElectricBlue),
+                        decorationBox = { innerTextField ->
+                            if (concept.isEmpty()) {
+                                Text(
+                                    text = "Ej. Almuerzo, Uber, Envío, Netflix...",
+                                    fontFamily = PoppinsFontFamily,
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFAEAEB2)
+                                )
+                            }
+                            innerTextField()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("concept_input")
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (concept.isNotEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.Cancel,
+                                contentDescription = "Borrar",
+                                tint = TitaniumTextSecondary,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable {
+                                        concept = ""
+                                        autoMatchedCategory = null
+                                    }
+                            )
+                        }
+                        IconButton(
+                            onClick = { showVoiceDialog = true },
+                            modifier = Modifier.size(28.dp)
                         ) {
-                            Text(
-                                text = "+${Formatters.formatMoney(quickVal.toDouble())}",
-                                fontFamily = PoppinsFontFamily,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 11.sp,
-                                color = TextPrimary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = "Dictar por voz",
+                                tint = ElectricBlue,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            if (!autoMatchedCategory.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.padding(start = 4.dp)
+                ) {
+                    Text(
+                        text = "⚡ Detección automática:",
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = ElectricBlue
+                    )
+                    Text(
+                        text = "Asignado a '$autoMatchedCategory'",
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 11.sp,
+                        color = TitaniumTextSecondary
+                    )
+                }
+            }
 
-            // Concept Input
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // -------------------------------------------------------------
+            // Categoría
+            // -------------------------------------------------------------
             Text(
-                text = "Concepto",
+                text = "Categoría",
                 fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,
-                color = TextPrimary
+                color = TitaniumTextPrimary
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            OutlinedTextField(
-                value = concept,
-                onValueChange = { concept = it },
-                placeholder = { Text("Ej. Almuerzo, Licra, Envío, Sueldo...", fontSize = 14.sp) },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("concept_input"),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedBorderColor = DeepGreen,
-                    unfocusedBorderColor = NeutralGray
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Quick concept suggestion pills
+            val currentCategories = if (mode == TransactionSheetMode.EXPENSE) expenseCategories else incomeCategories
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                quickConcepts.forEach { suggestion ->
+                currentCategories.forEach { catItem ->
+                    val isSelected = selectedCategory == catItem.name
+                    val cardBg = if (isSelected) TitaniumDarkCard else SurfaceWhite
+                    val tintColor = if (isSelected) Color.White else TitaniumTextSecondary
+                    val textColor = if (isSelected) Color.White else TitaniumTextPrimary
+
                     Surface(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { concept = suggestion },
-                        color = if (concept == suggestion) SoftGreenLight else Sand
+                            .size(width = 68.dp, height = 68.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { selectedCategory = catItem.name },
+                        shape = RoundedCornerShape(16.dp),
+                        color = cardBg,
+                        border = if (!isSelected) BorderStroke(1.dp, TitaniumBorder) else null
                     ) {
-                        Text(
-                            text = suggestion,
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                            color = if (concept == suggestion) DeepGreen else TextSecondary,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = catItem.icon,
+                                contentDescription = catItem.name,
+                                tint = tintColor,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = catItem.name,
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                fontSize = 11.sp,
+                                color = textColor
+                            )
+                        }
                     }
                 }
             }
 
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // -------------------------------------------------------------
+            // Método de pago / cuenta
+            // -------------------------------------------------------------
+            Text(
+                text = "Método de pago / cuenta",
+                fontFamily = PoppinsFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = TitaniumTextPrimary
+            )
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Categories
-            Text(
-                text = "Categoría",
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp,
-                color = TextPrimary
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            val currentCategories = if (mode == TransactionSheetMode.EXPENSE) expenseCategories else incomeCategories
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                currentCategories.forEach { cat ->
-                    val isSelected = selectedCategory == cat
-                    val bg = if (isSelected) DeepGreen else Color.White
-                    val txt = if (isSelected) Color.White else TextPrimary
+                paymentMethodsList.forEach { pItem ->
+                    val isSelected = paymentMethod == pItem.name
                     Surface(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .clickable { selectedCategory = cat },
-                        color = bg,
-                        shape = RoundedCornerShape(10.dp),
-                        shadowElevation = if (isSelected) 2.dp else 0.dp
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { paymentMethod = pItem.name },
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (isSelected) TitaniumDarkCard else SurfaceWhite,
+                        border = if (!isSelected) BorderStroke(1.dp, TitaniumBorder) else null
                     ) {
                         Row(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(
-                                imageVector = CategoryIcons.getIcon(cat),
-                                contentDescription = cat,
-                                tint = if (isSelected) Color.White else DeepGreen,
+                                imageVector = pItem.icon,
+                                contentDescription = null,
+                                tint = if (isSelected) Color.White else TitaniumTextSecondary,
                                 modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = cat,
+                                text = pItem.name,
                                 fontFamily = PoppinsFontFamily,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                fontSize = 13.sp,
-                                color = txt
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = if (isSelected) Color.White else TitaniumTextPrimary
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Payment Method
-            Text(
-                text = "Método de pago / cuenta",
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp,
-                color = TextPrimary
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                paymentMethods.forEach { method ->
-                    val isSelected = paymentMethod == method
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
-                            .clickable { paymentMethod = method },
-                        color = if (isSelected) DeepGreen else Color.White,
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Text(
-                            text = method,
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            fontSize = 12.sp,
-                            color = if (isSelected) Color.White else TextPrimary,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Advanced Accounting Type Toggle
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showMoreAccountingTypes = !showMoreAccountingTypes }
-                    .padding(vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Tipo contable: ${selectedAccountingType.displayName}",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
-                    color = DeepGreen
-                )
-                Text(
-                    text = if (showMoreAccountingTypes) "Ocultar ▲" else "Cambiar ▼",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-            }
-
-            if (showMoreAccountingTypes) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    AccountingType.values().forEach { acType ->
-                        val isSelected = selectedAccountingType == acType
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { selectedAccountingType = acType },
-                            color = if (isSelected) DeepGreen else Sand
-                        ) {
-                            Text(
-                                text = acType.displayName,
-                                fontFamily = PoppinsFontFamily,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                fontSize = 11.sp,
-                                color = if (isSelected) Color.White else TextPrimary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Optional Note
-            OutlinedTextField(
-                value = note,
-                onValueChange = { note = it },
-                placeholder = { Text("Nota opcional...", fontSize = 13.sp) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedBorderColor = DeepGreen,
-                    unfocusedBorderColor = NeutralGray
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Action Button: Fast Save
+            // -------------------------------------------------------------
+            // Guardar Movimiento (Titanium Dark Capsule Button)
+            // -------------------------------------------------------------
             Button(
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
-                    val isInc = when (mode) {
-                        TransactionSheetMode.INCOME -> true
-                        TransactionSheetMode.EXPENSE -> false
-                        TransactionSheetMode.TRANSFER -> false
-                    }
+                    val isInc = mode == TransactionSheetMode.INCOME
                     val tx = TransactionEntity(
                         type = selectedAccountingType.name,
                         concept = concept.trim(),
@@ -676,68 +859,47 @@ fun AddTransactionSheet(
                     .fillMaxWidth()
                     .height(52.dp)
                     .testTag("save_transaction_button"),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (mode == TransactionSheetMode.EXPENSE) Coral else DeepGreen,
-                    disabledContainerColor = NeutralGray
+                    containerColor = TitaniumDarkCard,
+                    disabledContainerColor = Color(0xFFC7C7CC)
                 )
             ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Guardar Movimiento",
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     color = Color.White
                 )
             }
 
-            if (concept.isNotBlank() && onSaveFavorite != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-                val isAlreadyFav = favorites.any { it.name.equals(concept.trim(), ignoreCase = true) }
-                var savedFavFeedback by remember { mutableStateOf(false) }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = {
-                            val parsedAmount = amountText.toDoubleOrNull()
-                            val isInc = mode == TransactionSheetMode.INCOME
-                            val fav = FavoriteEntity(
-                                name = concept.trim(),
-                                type = selectedAccountingType.name,
-                                category = selectedCategory,
-                                paymentMethod = paymentMethod,
-                                amount = parsedAmount,
-                                isIncome = isInc
-                            )
-                            onSaveFavorite(fav)
-                            savedFavFeedback = true
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = SoftGreen,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (savedFavFeedback) "✓ Guardado en favoritos"
-                            else if (isAlreadyFav) "Actualizar favorito"
-                            else "Guardar como favorito",
-                            fontFamily = PoppinsFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp,
-                            color = DeepGreen
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(18.dp))
         }
+    }
+
+    if (showVoiceDialog) {
+        VoiceInputDialog(
+            rules = rules,
+            onDismiss = { showVoiceDialog = false },
+            onConfirm = { parsedTx, chosenPaymentMethod ->
+                if (parsedTx.amount > 0) {
+                    amountText = parsedTx.amount.toLong().toString()
+                }
+                concept = parsedTx.concept
+                selectedCategory = parsedTx.category
+                autoMatchedCategory = parsedTx.category
+                mode = if (parsedTx.isIncome) TransactionSheetMode.INCOME else TransactionSheetMode.EXPENSE
+                paymentMethod = chosenPaymentMethod
+                showVoiceDialog = false
+            }
+        )
     }
 }

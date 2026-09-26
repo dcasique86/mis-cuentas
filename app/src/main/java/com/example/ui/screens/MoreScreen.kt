@@ -19,13 +19,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,24 +59,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.entity.AccountingType
-import com.example.data.entity.TransactionEntity
 import com.example.ui.components.Formatters
 import com.example.ui.components.MisCuentasIcon
-import com.example.ui.theme.Coral
-import com.example.ui.theme.Cream
-import com.example.ui.theme.DeepGreen
-import com.example.ui.theme.NeutralGray
-import com.example.ui.theme.PoppinsFontFamily
-import com.example.ui.theme.Sand
-import com.example.ui.theme.SoftGreen
-import com.example.ui.theme.SoftGreenLight
-import com.example.ui.theme.TextPrimary
-import com.example.ui.theme.TextSecondary
-
-import androidx.compose.material.icons.filled.Widgets
-import androidx.compose.material.icons.filled.DeleteSweep
 import com.example.ui.components.WidgetShowcaseDialog
+import com.example.ui.theme.CoralRed
+import com.example.ui.theme.CoralRedLight
+import com.example.ui.theme.ElectricBlue
+import com.example.ui.theme.ElectricBlueLight
+import com.example.ui.theme.EmeraldGreen
+import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.SurfaceWhite
+import com.example.ui.theme.TitaniumBorder
+import com.example.ui.theme.TitaniumDarkCard
+import com.example.ui.theme.TitaniumDivider
+import com.example.ui.theme.TitaniumLightBg
+import com.example.ui.theme.TitaniumTextPrimary
+import com.example.ui.theme.TitaniumTextSecondary
 
 @Composable
 fun MoreScreen(
@@ -83,6 +89,13 @@ fun MoreScreen(
     onAddIncomeClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
     onTransferClick: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToAccounts: () -> Unit = {},
+    onNavigateToBudgets: () -> Unit = {},
+    onNavigateToGoals: () -> Unit = {},
+    onNavigateToRecurring: () -> Unit = {},
+    onNavigateToAutoRules: () -> Unit = {},
+    onVoiceInputClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showAdjustDialog by remember { mutableStateOf(false) }
@@ -95,28 +108,37 @@ fun MoreScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Cream)
+            .background(TitaniumLightBg)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
         Spacer(modifier = Modifier.height(14.dp))
 
+        // Screen Header
         Text(
-            text = "Más opciones",
+            text = "MÁS OPCIONES",
             fontFamily = PoppinsFontFamily,
             fontWeight = FontWeight.Bold,
-            fontSize = 26.sp,
-            color = TextPrimary
+            fontSize = 11.sp,
+            letterSpacing = 0.8.sp,
+            color = TitaniumTextSecondary
+        )
+        Text(
+            text = "Gestión y Ajustes",
+            fontFamily = PoppinsFontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            color = TitaniumTextPrimary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Brand Banner Card
+        // Brand Banner Card (Titanium Dark Card)
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = TitaniumDarkCard),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -128,25 +150,25 @@ fun MoreScreen(
                             fontFamily = PoppinsFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = TextPrimary
+                            color = Color.White
                         )
                         Text(
                             text = "“Tu dinero, en orden.”",
                             fontFamily = PoppinsFontFamily,
                             fontWeight = FontWeight.Medium,
                             fontSize = 13.sp,
-                            color = DeepGreen
+                            color = ElectricBlue
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = "Aplicación personal para registrar tus movimientos en 2-5 segundos sin complicaciones financieras.",
                     fontFamily = PoppinsFontFamily,
-                    fontSize = 13.sp,
-                    color = TextSecondary,
+                    fontSize = 12.sp,
+                    color = Color(0xFFAEAEB2),
                     lineHeight = 18.sp
                 )
             }
@@ -156,41 +178,107 @@ fun MoreScreen(
 
         // Acciones de gestión
         Text(
-            text = "Gestión de caja y datos",
+            text = "Herramientas y Finanzas",
             fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = TextPrimary
+            color = TitaniumTextPrimary
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
-                // Widgets de inicio
+                OptionRow(
+                    icon = Icons.Default.Mic,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
+                    title = "Entrada por voz",
+                    subtitle = "Dicta 'Almuerzo 25 mil' o 'Taxi 30 mil' con auto-clasificación",
+                    onClick = onVoiceInputClick
+                )
+
+                OptionRow(
+                    icon = Icons.Default.Repeat,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
+                    title = "Transacciones recurrentes",
+                    subtitle = "Suscripciones (Netflix, Spotify), servicios públicos y sueldos fijos",
+                    onClick = onNavigateToRecurring
+                )
+
+                OptionRow(
+                    icon = Icons.Default.AutoAwesome,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
+                    title = "Reglas automáticas",
+                    subtitle = "Asigna categorías por palabras clave (ej. 'Uber' → Transporte)",
+                    onClick = onNavigateToAutoRules
+                )
+
+                OptionRow(
+                    icon = Icons.Default.Tune,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
+                    title = "Mis Cuentas (Billeteras y bancos)",
+                    subtitle = "Efectivo, Nequi, Bancolombia, tarjetas de crédito y ahorros",
+                    onClick = onNavigateToAccounts
+                )
+
+                OptionRow(
+                    icon = Icons.Default.PieChart,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
+                    title = "Presupuestos mensuales",
+                    subtitle = "Controla tus límites de gasto por categoría con alertas",
+                    onClick = onNavigateToBudgets
+                )
+
+                OptionRow(
+                    icon = Icons.Default.CheckCircle,
+                    iconTint = EmeraldGreen,
+                    iconBg = EmeraldGreenLight,
+                    title = "Metas de ahorro",
+                    subtitle = "Define tus objetivos (Viaje, PC, Emergencias) y registra abonos",
+                    onClick = onNavigateToGoals
+                )
+
+                OptionRow(
+                    icon = Icons.Default.Settings,
+                    iconTint = TitaniumTextPrimary,
+                    iconBg = TitaniumLightBg,
+                    title = "Configuración de la app",
+                    subtitle = "Moneda, preferencias, recordatorios y ajustes generales",
+                    onClick = onNavigateToSettings
+                )
+
                 OptionRow(
                     icon = Icons.Default.Widgets,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
                     title = "Widgets de pantalla de inicio",
                     subtitle = "Diseños Compacto, Estándar y Extendido con acceso rápido",
                     onClick = { showWidgetShowcase = true }
                 )
 
-                // Cierre del día
                 OptionRow(
                     icon = Icons.Default.ReceiptLong,
+                    iconTint = EmeraldGreen,
+                    iconBg = EmeraldGreenLight,
                     title = "Cierre del día",
                     subtitle = "Cuenta tu efectivo y verifica tu caja diaria",
                     onClick = onDailyClosingClick
                 )
 
-                // Ajuste de caja
                 OptionRow(
                     icon = Icons.Default.Tune,
+                    iconTint = TitaniumTextPrimary,
+                    iconBg = TitaniumLightBg,
                     title = "Ajustar saldo de caja",
                     subtitle = "Cuadra tu saldo real actual (${Formatters.formatMoney(currentBalance)})",
                     onClick = {
@@ -199,17 +287,19 @@ fun MoreScreen(
                     }
                 )
 
-                // Borrar base de datos para pruebas reales
                 OptionRow(
                     icon = Icons.Default.DeleteSweep,
+                    iconTint = CoralRed,
+                    iconBg = CoralRedLight,
                     title = "Borrar base de datos (Reiniciar a $0)",
                     subtitle = "Empieza desde cero para pruebas reales de la aplicación",
                     onClick = { showClearDbDialog = true }
                 )
 
-                // Restablecer datos de prueba
                 OptionRow(
                     icon = Icons.Default.Refresh,
+                    iconTint = ElectricBlue,
+                    iconBg = ElectricBlueLight,
                     title = "Cargar datos de ejemplo",
                     subtitle = "Carga ejemplos de ingresos, gastos y deudas",
                     onClick = { showResetDialog = true }
@@ -223,38 +313,38 @@ fun MoreScreen(
         Text(
             text = "Filosofía de Mis Cuentas",
             fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = TextPrimary
+            color = TitaniumTextPrimary
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(18.dp)) {
                 PillarRow(
                     icon = Icons.Default.Bolt,
                     title = "Rápido",
                     desc = "Registra tus movimientos en 2 a 5 segundos."
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 PillarRow(
                     icon = Icons.Default.PieChart,
                     title = "Claro",
                     desc = "Visualiza tu saldo y números al instante."
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 PillarRow(
                     icon = Icons.Default.Lock,
                     title = "Privado",
                     desc = "Tus datos viven solo en tu teléfono con base de datos local Room."
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 PillarRow(
                     icon = Icons.Default.CheckCircle,
                     title = "Hecho para ti",
@@ -270,129 +360,91 @@ fun MoreScreen(
     if (showAdjustDialog) {
         AlertDialog(
             onDismissRequest = { showAdjustDialog = false },
-            containerColor = Cream,
+            containerColor = SurfaceWhite,
             title = {
                 Text(
                     text = "Ajuste de caja",
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = TextPrimary
+                    color = TitaniumTextPrimary
                 )
             },
             text = {
                 Column {
                     Text(
-                        text = "Ingresa el saldo real en efectivo que tienes ahora:",
+                        text = "Saldo registrado actual: ${Formatters.formatMoney(currentBalance)}",
                         fontFamily = PoppinsFontFamily,
                         fontSize = 13.sp,
-                        color = TextSecondary
+                        color = TitaniumTextSecondary
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = adjustAmountText,
+                        onValueChange = { adjustAmountText = it },
+                        label = { Text("Nuevo saldo real ($)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = ElectricBlue,
+                            unfocusedBorderColor = TitaniumBorder
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(
-                        value = adjustAmountText,
-                        onValueChange = { adjustAmountText = it.filter { c -> c.isDigit() } },
-                        label = { Text("Nuevo saldo ($)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        value = adjustNote,
+                        onValueChange = { adjustNote = it },
+                        label = { Text("Motivo del ajuste") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White
-                        )
+                            focusedBorderColor = ElectricBlue,
+                            unfocusedBorderColor = TitaniumBorder
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        val newAmount = adjustAmountText.toDoubleOrNull() ?: currentBalance
-                        onAdjustCash(newAmount, adjustNote)
+                        val newBal = adjustAmountText.toDoubleOrNull() ?: currentBalance
+                        onAdjustCash(newBal, adjustNote)
                         showAdjustDialog = false
                     },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DeepGreen)
+                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
                 ) {
-                    Text("Aplicar Ajuste", color = Color.White)
+                    Text("Aplicar ajuste", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                OutlinedButton(
-                    onClick = { showAdjustDialog = false },
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Cancelar", color = TextSecondary)
+                OutlinedButton(onClick = { showAdjustDialog = false }) {
+                    Text("Cancelar", fontFamily = PoppinsFontFamily)
                 }
             }
         )
     }
 
-    // Clear Database Confirmation Dialog
-    if (showClearDbDialog) {
-        AlertDialog(
-            onDismissRequest = { showClearDbDialog = false },
-            containerColor = Cream,
-            title = {
-                Text(
-                    text = "¿Borrar base de datos?",
-                    fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = TextPrimary
-                )
-            },
-            text = {
-                Text(
-                    text = "Se eliminarán todas las transacciones, deudas y cierres registrados para que puedas probar la aplicación desde $0 con datos reales.",
-                    fontFamily = PoppinsFontFamily,
-                    fontSize = 13.sp,
-                    color = TextSecondary
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        onClearDatabase()
-                        showClearDbDialog = false
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Coral)
-                ) {
-                    Text("Borrar todo", color = Color.White)
-                }
-            },
-            dismissButton = {
-                OutlinedButton(
-                    onClick = { showClearDbDialog = false },
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Cancelar", color = TextSecondary)
-                }
-            }
-        )
-    }
-
-    // Reset Confirmation Dialog
+    // Reset Demo Data Dialog
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            containerColor = Cream,
+            containerColor = SurfaceWhite,
             title = {
                 Text(
-                    text = "¿Cargar datos de ejemplo?",
+                    text = "Cargar datos de ejemplo",
                     fontFamily = PoppinsFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = TextPrimary
+                    color = TitaniumTextPrimary
                 )
             },
             text = {
                 Text(
-                    text = "Se cargarán movimientos, deudas y favoritos de muestra para explorar las funciones de Mis Cuentas.",
+                    text = "¿Deseas cargar los datos de ejemplo iniciales (ventas, gastos comunes y deudas)? Esto restablecerá la base de datos a los datos de muestra.",
                     fontFamily = PoppinsFontFamily,
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = TitaniumTextSecondary
                 )
             },
             confirmButton = {
@@ -401,33 +453,79 @@ fun MoreScreen(
                         onResetDemoData()
                         showResetDialog = false
                     },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DeepGreen)
+                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
                 ) {
-                    Text("Cargar", color = Color.White)
+                    Text("Restablecer", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                OutlinedButton(
-                    onClick = { showResetDialog = false },
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("Cancelar", color = TextSecondary)
+                OutlinedButton(onClick = { showResetDialog = false }) {
+                    Text("Cancelar", fontFamily = PoppinsFontFamily)
                 }
             }
         )
     }
 
-    // Widget Showcase Dialog
+    // Clear Database Dialog
+    if (showClearDbDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearDbDialog = false },
+            containerColor = SurfaceWhite,
+            title = {
+                Text(
+                    text = "¿Borrar toda la base de datos?",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = CoralRed
+                )
+            },
+            text = {
+                Text(
+                    text = "Se eliminarán todos los movimientos, deudas, abonos, categorías y datos de prueba. La aplicación quedará en $0 lista para que registres tus datos reales. Esta acción no se puede deshacer.",
+                    fontFamily = PoppinsFontFamily,
+                    fontSize = 13.sp,
+                    color = TitaniumTextSecondary
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onClearDatabase()
+                        showClearDbDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CoralRed)
+                ) {
+                    Text("Sí, borrar todo", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showClearDbDialog = false }) {
+                    Text("Cancelar", fontFamily = PoppinsFontFamily)
+                }
+            }
+        )
+    }
+
+    // Widget showcase dialog
     if (showWidgetShowcase) {
         WidgetShowcaseDialog(
             balance = currentBalance,
             todayIncome = todayIncome,
             todayExpense = todayExpense,
             onDismiss = { showWidgetShowcase = false },
-            onAddIncomeClick = onAddIncomeClick,
-            onAddExpenseClick = onAddExpenseClick,
-            onTransferClick = onTransferClick
+            onAddIncomeClick = {
+                showWidgetShowcase = false
+                onAddIncomeClick()
+            },
+            onAddExpenseClick = {
+                showWidgetShowcase = false
+                onAddExpenseClick()
+            },
+            onTransferClick = {
+                showWidgetShowcase = false
+                onTransferClick()
+            }
         )
     }
 }
@@ -435,6 +533,8 @@ fun MoreScreen(
 @Composable
 private fun OptionRow(
     icon: ImageVector,
+    iconTint: Color,
+    iconBg: Color,
     title: String,
     subtitle: String,
     onClick: () -> Unit
@@ -451,10 +551,10 @@ private fun OptionRow(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(Sand),
+                .background(iconBg),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = DeepGreen, modifier = Modifier.size(20.dp))
+            Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -463,15 +563,21 @@ private fun OptionRow(
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                color = TextPrimary
+                color = TitaniumTextPrimary
             )
             Text(
                 text = subtitle,
                 fontFamily = PoppinsFontFamily,
                 fontSize = 12.sp,
-                color = TextSecondary
+                color = TitaniumTextSecondary
             )
         }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            contentDescription = null,
+            tint = Color(0xFFC7C7CC),
+            modifier = Modifier.size(13.dp)
+        )
     }
 }
 
@@ -486,25 +592,25 @@ private fun PillarRow(
             modifier = Modifier
                 .size(34.dp)
                 .clip(CircleShape)
-                .background(SoftGreenLight),
+                .background(ElectricBlueLight),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = DeepGreen, modifier = Modifier.size(18.dp))
+            Icon(imageVector = icon, contentDescription = null, tint = ElectricBlue, modifier = Modifier.size(18.dp))
         }
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
                 text = title,
                 fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = TextPrimary
+                color = TitaniumTextPrimary
             )
             Text(
                 text = desc,
                 fontFamily = PoppinsFontFamily,
                 fontSize = 12.sp,
-                color = TextSecondary
+                color = TitaniumTextSecondary
             )
         }
     }

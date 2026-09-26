@@ -17,7 +17,7 @@
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/app_logo"
+            android:src="@drawable/ic_widget_app_logo_mark_light"
             android:contentDescription="Mis Cuentas Logo" />
 
         <LinearLayout

@@ -70,12 +70,171 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             database.debtDao(),
             database.favoriteDao(),
             database.debtPaymentDao(),
-            database.dailyClosingDao()
+            database.dailyClosingDao(),
+            database.accountDao(),
+            database.budgetDao(),
+            database.savingsGoalDao(),
+            database.recurringTransactionDao(),
+            database.autoRuleDao()
         )
         viewModelScope.launch {
             // Clear database to $0 for real user testing
             repository.clearDatabaseForRealTesting()
             notifyWidgetUpdate()
+        }
+    }
+
+    // Accounts, Budgets, Savings Goals
+    val allAccounts: StateFlow<List<com.example.data.entity.AccountEntity>> = repository.allAccounts
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allBudgets: StateFlow<List<com.example.data.entity.BudgetEntity>> = repository.allBudgets
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allGoals: StateFlow<List<com.example.data.entity.SavingsGoalEntity>> = repository.allGoals
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allRecurring: StateFlow<List<com.example.data.entity.RecurringTransactionEntity>> = repository.allRecurring
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val activeRecurring: StateFlow<List<com.example.data.entity.RecurringTransactionEntity>> = repository.activeRecurring
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allRules: StateFlow<List<com.example.data.entity.AutoRuleEntity>> = repository.allRules
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val activeRules: StateFlow<List<com.example.data.entity.AutoRuleEntity>> = repository.activeRules
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun addRecurring(recurring: com.example.data.entity.RecurringTransactionEntity) {
+        viewModelScope.launch {
+            repository.insertRecurring(recurring)
+        }
+    }
+
+    fun updateRecurring(recurring: com.example.data.entity.RecurringTransactionEntity) {
+        viewModelScope.launch {
+            repository.updateRecurring(recurring)
+        }
+    }
+
+    fun deleteRecurring(recurring: com.example.data.entity.RecurringTransactionEntity) {
+        viewModelScope.launch {
+            repository.deleteRecurring(recurring)
+        }
+    }
+
+    fun applyRecurringNow(recurring: com.example.data.entity.RecurringTransactionEntity) {
+        viewModelScope.launch {
+            repository.applyRecurringNow(recurring)
+            notifyWidgetUpdate()
+        }
+    }
+
+    fun addRule(rule: com.example.data.entity.AutoRuleEntity) {
+        viewModelScope.launch {
+            repository.insertRule(rule)
+        }
+    }
+
+    fun updateRule(rule: com.example.data.entity.AutoRuleEntity) {
+        viewModelScope.launch {
+            repository.updateRule(rule)
+        }
+    }
+
+    fun deleteRule(rule: com.example.data.entity.AutoRuleEntity) {
+        viewModelScope.launch {
+            repository.deleteRule(rule)
+        }
+    }
+
+    fun predictCategory(concept: String): com.example.data.entity.AutoRuleEntity? {
+        return com.example.util.VoiceInputParser.matchCategory(concept, allRules.value)
+    }
+
+    fun registerVoiceTransaction(
+        parsed: com.example.util.ParsedVoiceTransaction,
+        paymentMethod: String = "Efectivo"
+    ) {
+        viewModelScope.launch {
+            val type = if (parsed.isIncome) AccountingType.INGRESO.name else AccountingType.GASTO.name
+            val tx = TransactionEntity(
+                type = type,
+                concept = parsed.concept.ifBlank { "Transacción rápida" },
+                category = parsed.category,
+                paymentMethod = paymentMethod,
+                amount = parsed.amount,
+                isIncome = parsed.isIncome,
+                timestamp = System.currentTimeMillis(),
+                note = "Voz / Dictado rápido"
+            )
+            repository.insertTransaction(tx)
+            notifyWidgetUpdate()
+        }
+    }
+
+    fun addAccount(account: com.example.data.entity.AccountEntity) {
+        viewModelScope.launch {
+            repository.insertAccount(account)
+        }
+    }
+
+    fun updateAccount(account: com.example.data.entity.AccountEntity) {
+        viewModelScope.launch {
+            repository.updateAccount(account)
+        }
+    }
+
+    fun deleteAccount(account: com.example.data.entity.AccountEntity) {
+        viewModelScope.launch {
+            repository.deleteAccount(account)
+        }
+    }
+
+    fun addBudget(budget: com.example.data.entity.BudgetEntity) {
+        viewModelScope.launch {
+            repository.insertBudget(budget)
+        }
+    }
+
+    fun updateBudget(budget: com.example.data.entity.BudgetEntity) {
+        viewModelScope.launch {
+            repository.updateBudget(budget)
+        }
+    }
+
+    fun deleteBudget(budget: com.example.data.entity.BudgetEntity) {
+        viewModelScope.launch {
+            repository.deleteBudget(budget)
+        }
+    }
+
+    fun addGoal(goal: com.example.data.entity.SavingsGoalEntity) {
+        viewModelScope.launch {
+            repository.insertGoal(goal)
+        }
+    }
+
+    fun updateGoal(goal: com.example.data.entity.SavingsGoalEntity) {
+        viewModelScope.launch {
+            repository.updateGoal(goal)
+        }
+    }
+
+    fun deleteGoal(goal: com.example.data.entity.SavingsGoalEntity) {
+        viewModelScope.launch {
+            repository.deleteGoal(goal)
+        }
+    }
+
+    fun contributeToGoal(goal: com.example.data.entity.SavingsGoalEntity, amount: Double) {
+        viewModelScope.launch {
+            val updated = goal.copy(
+                savedAmount = (goal.savedAmount + amount).coerceAtMost(goal.targetAmount),
+                isCompleted = (goal.savedAmount + amount) >= goal.targetAmount
+            )
+            repository.updateGoal(updated)
         }
     }
 

@@ -38,16 +38,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.entity.AccountingType
+import com.example.data.entity.AccountEntity
+import com.example.data.entity.BudgetEntity
+import com.example.data.entity.SavingsGoalEntity
 import com.example.data.entity.TransactionEntity
 import com.example.ui.components.AddTransactionSheet
 import com.example.ui.components.TransactionSheetMode
+import com.example.ui.components.VoiceInputDialog
+import com.example.ui.screens.AccountsScreen
+import com.example.ui.screens.AutoRulesScreen
+import com.example.ui.screens.BudgetsScreen
 import com.example.ui.screens.DailyClosingScreen
 import com.example.ui.screens.DebtsScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.MoreScreen
+import com.example.ui.screens.RecurringScreen
 import com.example.ui.screens.ReportsScreen
+import com.example.ui.screens.SavingsGoalsScreen
+import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.TransactionsScreen
 import com.example.ui.theme.Cream
+import com.example.ui.theme.ElectricBlue
+import com.example.ui.theme.ElectricBlueLight
+import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.TitaniumTextSecondary
 import com.example.ui.theme.DeepGreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.PoppinsFontFamily
@@ -114,6 +128,13 @@ fun MisCuentasApp(
     var showTransactionSheet by remember { mutableStateOf(false) }
     var transactionSheetMode by remember { mutableStateOf(TransactionSheetMode.EXPENSE) }
     var showDailyClosingScreen by remember { mutableStateOf(false) }
+    var showSettingsScreen by remember { mutableStateOf(false) }
+    var showAccountsScreen by remember { mutableStateOf(false) }
+    var showBudgetsScreen by remember { mutableStateOf(false) }
+    var showGoalsScreen by remember { mutableStateOf(false) }
+    var showRecurringScreen by remember { mutableStateOf(false) }
+    var showAutoRulesScreen by remember { mutableStateOf(false) }
+    var showVoiceDialog by remember { mutableStateOf(false) }
     var debtsInitialTabIsIOwe by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -164,12 +185,19 @@ fun MisCuentasApp(
     val pastClosings by viewModel.allClosings.collectAsState()
     val monthlyReport by viewModel.monthlyReport.collectAsState()
     val selectedMonthOffset by viewModel.selectedMonthOffset.collectAsState()
+    val allAccounts by viewModel.allAccounts.collectAsState()
+    val allBudgets by viewModel.allBudgets.collectAsState()
+    val allGoals by viewModel.allGoals.collectAsState()
+    val allRecurring by viewModel.allRecurring.collectAsState()
+    val allRules by viewModel.allRules.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Cream,
         bottomBar = {
-            if (!showDailyClosingScreen) {
+            val isFullScreen = showDailyClosingScreen || showSettingsScreen || showAccountsScreen ||
+                    showBudgetsScreen || showGoalsScreen || showRecurringScreen || showAutoRulesScreen
+            if (!isFullScreen) {
                 NavigationBar(
                     containerColor = Color.White,
                     tonalElevation = 6.dp
@@ -191,15 +219,18 @@ fun MisCuentasApp(
                                     text = tab.title,
                                     fontFamily = PoppinsFontFamily,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    fontSize = 11.sp
+                                    fontSize = if (tab == AppNavTab.MOVIMIENTOS) 9.5.sp else 11.sp,
+                                    letterSpacing = if (tab == AppNavTab.MOVIMIENTOS) (-0.4).sp else 0.sp,
+                                    maxLines = 1,
+                                    softWrap = false
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = DeepGreen,
-                                selectedTextColor = DeepGreen,
-                                indicatorColor = SoftGreenLight,
-                                unselectedIconColor = TextSecondary,
-                                unselectedTextColor = TextSecondary
+                                selectedIconColor = ElectricBlue,
+                                selectedTextColor = ElectricBlue,
+                                indicatorColor = ElectricBlueLight,
+                                unselectedIconColor = TitaniumTextSecondary,
+                                unselectedTextColor = TitaniumTextSecondary
                             ),
                             modifier = Modifier.testTag(tab.tag)
                         )
@@ -225,6 +256,89 @@ fun MisCuentasApp(
                 onBackClick = { showDailyClosingScreen = false },
                 modifier = Modifier.padding(innerPadding)
             )
+        } else if (showSettingsScreen) {
+            SettingsScreen(
+                currentBalance = availableBalance,
+                accounts = allAccounts,
+                onNavigateToAccounts = {
+                    showSettingsScreen = false
+                    showAccountsScreen = true
+                },
+                onAddAccount = { viewModel.addAccount(it) },
+                onUpdateAccount = { viewModel.updateAccount(it) },
+                onDeleteAccount = { viewModel.deleteAccount(it) },
+                onBackClick = { showSettingsScreen = false },
+                onAdjustCash = { newBalance, note ->
+                    val diff = newBalance - availableBalance
+                    val isIncome = diff >= 0
+                    val tx = TransactionEntity(
+                        type = AccountingType.AJUSTE_CAJA.name,
+                        concept = "Ajuste de saldo",
+                        category = "Ajuste",
+                        paymentMethod = "Efectivo",
+                        amount = kotlin.math.abs(diff),
+                        isIncome = isIncome,
+                        timestamp = System.currentTimeMillis(),
+                        note = note
+                    )
+                    viewModel.addTransaction(tx)
+                },
+                onResetDemoData = { viewModel.loadSampleData() },
+                onClearDatabase = { viewModel.clearDatabaseForTesting() },
+                onDailyClosingClick = {
+                    showSettingsScreen = false
+                    showDailyClosingScreen = true
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else if (showAccountsScreen) {
+            AccountsScreen(
+                accounts = allAccounts,
+                onAddAccount = { viewModel.addAccount(it) },
+                onUpdateAccount = { viewModel.updateAccount(it) },
+                onDeleteAccount = { viewModel.deleteAccount(it) },
+                onBackClick = { showAccountsScreen = false },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else if (showBudgetsScreen) {
+            BudgetsScreen(
+                budgets = allBudgets,
+                allTransactions = allTransactions,
+                onAddBudget = { viewModel.addBudget(it) },
+                onUpdateBudget = { viewModel.updateBudget(it) },
+                onDeleteBudget = { viewModel.deleteBudget(it) },
+                onBackClick = { showBudgetsScreen = false },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else if (showGoalsScreen) {
+            SavingsGoalsScreen(
+                goals = allGoals,
+                onAddGoal = { viewModel.addGoal(it) },
+                onUpdateGoal = { viewModel.updateGoal(it) },
+                onDeleteGoal = { viewModel.deleteGoal(it) },
+                onContribute = { goal: SavingsGoalEntity, amount: Double -> viewModel.contributeToGoal(goal, amount) },
+                onBackClick = { showGoalsScreen = false },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else if (showRecurringScreen) {
+            RecurringScreen(
+                recurringList = allRecurring,
+                onAddRecurring = { viewModel.addRecurring(it) },
+                onUpdateRecurring = { viewModel.updateRecurring(it) },
+                onDeleteRecurring = { viewModel.deleteRecurring(it) },
+                onApplyNow = { viewModel.applyRecurringNow(it) },
+                onBackClick = { showRecurringScreen = false },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else if (showAutoRulesScreen) {
+            AutoRulesScreen(
+                rules = allRules,
+                onAddRule = { viewModel.addRule(it) },
+                onUpdateRule = { viewModel.updateRule(it) },
+                onDeleteRule = { viewModel.deleteRule(it) },
+                onBackClick = { showAutoRulesScreen = false },
+                modifier = Modifier.padding(innerPadding)
+            )
         } else {
             when (currentTab) {
                 AppNavTab.INICIO -> {
@@ -234,6 +348,7 @@ fun MisCuentasApp(
                         onToggleBalanceVisibility = { viewModel.toggleBalanceVisibility() },
                         todaySummary = todaySummary,
                         recentTransactions = recentTransactions,
+                        accounts = allAccounts,
                         totalMeDeben = totalMeDeben,
                         countMeDeben = countMeDeben,
                         totalDebo = totalDebo,
@@ -243,6 +358,12 @@ fun MisCuentasApp(
                             currentTab = AppNavTab.DEUDAS
                         },
                         onDailyClosingClick = { showDailyClosingScreen = true },
+                        onNavigateToAccounts = { showAccountsScreen = true },
+                        onNavigateToBudgets = { showBudgetsScreen = true },
+                        onNavigateToGoals = { showGoalsScreen = true },
+                        onNavigateToRecurring = { showRecurringScreen = true },
+                        onNavigateToAutoRules = { showAutoRulesScreen = true },
+                        onVoiceInputClick = { showVoiceDialog = true },
                         onAddIncomeClick = {
                             transactionSheetMode = TransactionSheetMode.INCOME
                             showTransactionSheet = true
@@ -257,7 +378,7 @@ fun MisCuentasApp(
                         },
                         onMoreActionsClick = { currentTab = AppNavTab.MAS },
                         onViewAllTransactionsClick = { currentTab = AppNavTab.MOVIMIENTOS },
-                        onSettingsClick = { currentTab = AppNavTab.MAS },
+                        onSettingsClick = { showSettingsScreen = true },
                         onTransactionClick = { currentTab = AppNavTab.MOVIMIENTOS },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -339,6 +460,13 @@ fun MisCuentasApp(
                             transactionSheetMode = TransactionSheetMode.TRANSFER
                             showTransactionSheet = true
                         },
+                        onNavigateToSettings = { showSettingsScreen = true },
+                        onNavigateToAccounts = { showAccountsScreen = true },
+                        onNavigateToBudgets = { showBudgetsScreen = true },
+                        onNavigateToGoals = { showGoalsScreen = true },
+                        onNavigateToRecurring = { showRecurringScreen = true },
+                        onNavigateToAutoRules = { showAutoRulesScreen = true },
+                        onVoiceInputClick = { showVoiceDialog = true },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -351,20 +479,34 @@ fun MisCuentasApp(
                 initialMode = transactionSheetMode,
                 sheetState = sheetState,
                 favorites = favorites,
+                rules = allRules,
+                accounts = allAccounts,
                 onSaveFavorite = { viewModel.addFavorite(it) },
                 onDeleteFavorite = { viewModel.deleteFavorite(it) },
                 onDismiss = {
                     coroutineScope.launch {
-                        sheetState.hide()
+                        runCatching { sheetState.hide() }
                         showTransactionSheet = false
                     }
                 },
                 onSave = { newTx ->
                     viewModel.addTransaction(newTx)
                     coroutineScope.launch {
-                        sheetState.hide()
+                        runCatching { sheetState.hide() }
                         showTransactionSheet = false
                     }
+                }
+            )
+        }
+
+        // Voice Input Dialog
+        if (showVoiceDialog) {
+            VoiceInputDialog(
+                rules = allRules,
+                onDismiss = { showVoiceDialog = false },
+                onConfirm = { parsedTx, chosenMethod ->
+                    viewModel.registerVoiceTransaction(parsedTx, chosenMethod)
+                    showVoiceDialog = false
                 }
             )
         }

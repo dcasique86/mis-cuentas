@@ -6,7 +6,7 @@
     android:targetCellHeight="2"
     android:updatePeriodMillis="1800000"
     android:description="@string/widget_compact_description"
-    android:previewImage="@drawable/bg_widget_light_card"
+    android:previewImage="@drawable/preview_widget_compact"
     android:initialLayout="@layout/widget_mis_cuentas_compact"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />

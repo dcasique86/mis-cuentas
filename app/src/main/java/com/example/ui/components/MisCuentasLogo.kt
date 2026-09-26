@@ -39,9 +39,9 @@ import com.example.ui.theme.TextSecondary
 @Composable
 fun MisCuentasIcon(
     size: Dp = 40.dp,
-    backgroundColor: Color = DeepGreen,
+    backgroundColor: Color = Color(0xFFD36E4A),
     iconColor: Color = Color.White,
-    accentColor: Color = Coral,
+    accentColor: Color = Color(0xFFD36E4A),
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -89,10 +89,10 @@ fun MisCuentasIcon(
                 color = iconColor
             )
 
-            // 3. Iconic coral coin / accent dot on the right side
+            // 3. Iconic terracotta coin / accent dot on the right side
             drawCircle(
                 color = accentColor,
-                radius = w * 0.15f,
+                radius = w * 0.14f,
                 center = Offset(w * 0.70f, h * 0.58f)
             )
         }
@@ -114,9 +114,9 @@ fun MisCuentasHeaderLogo(
     ) {
         MisCuentasIcon(
             size = iconSize,
-            backgroundColor = DeepGreen,
+            backgroundColor = Color(0xFFD36E4A),
             iconColor = Color.White,
-            accentColor = Coral
+            accentColor = Color(0xFFD36E4A)
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -126,19 +126,19 @@ fun MisCuentasHeaderLogo(
                 text = "Mis Cuentas",
                 fontFamily = PoppinsFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = 19.sp,
+                fontSize = 17.sp,
                 color = TextPrimary,
-                lineHeight = 22.sp
+                lineHeight = 20.sp
             )
             if (showTagline) {
                 Text(
                     text = "Tu dinero, en orden",
                     fontFamily = PoppinsFontFamily,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 11.sp,
                     color = TextSecondary,
-                    letterSpacing = 0.4.sp,
-                    lineHeight = 14.sp
+                    letterSpacing = 0.2.sp,
+                    lineHeight = 13.sp
                 )
             }
         }
