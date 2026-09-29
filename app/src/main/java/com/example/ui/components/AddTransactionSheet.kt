@@ -198,7 +198,7 @@ fun AddTransactionSheet(
     }
 
     val quickAmounts = listOf(5000, 10000, 20000, 50000)
-    val isFormValid = amountText.toDoubleOrNull()?.let { it > 0 } == true && concept.isNotBlank()
+    val isFormValid = Formatters.parseAmountInput(amountText) > 0 && concept.isNotBlank()
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -494,10 +494,7 @@ fun AddTransactionSheet(
                             BasicTextField(
                                 value = amountText,
                                 onValueChange = { input ->
-                                    val digits = input.filter { it.isDigit() }
-                                    if (digits.length <= 12) {
-                                        amountText = digits
-                                    }
+                                    amountText = Formatters.formatAmountInput(input)
                                 },
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number,
@@ -509,7 +506,6 @@ fun AddTransactionSheet(
                                     }
                                 ),
                                 singleLine = true,
-                                visualTransformation = ThousandsSeparatorVisualTransformation(),
                                 textStyle = TextStyle(
                                     fontFamily = PoppinsFontFamily,
                                     fontWeight = FontWeight.Bold,
@@ -564,8 +560,8 @@ fun AddTransactionSheet(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
-                                        val current = amountText.toLongOrNull() ?: 0L
-                                        amountText = (current + quickVal).toString()
+                                        val current = Formatters.parseAmountInput(amountText)
+                                        amountText = Formatters.formatAmountInput((current + quickVal).toLong().toString())
                                     },
                                 shape = RoundedCornerShape(12.dp),
                                 color = TitaniumLightBg
@@ -840,7 +836,7 @@ fun AddTransactionSheet(
             // -------------------------------------------------------------
             Button(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = Formatters.parseAmountInput(amountText)
                     val isInc = mode == TransactionSheetMode.INCOME
                     val tx = TransactionEntity(
                         type = selectedAccountingType.name,
@@ -891,7 +887,7 @@ fun AddTransactionSheet(
             onDismiss = { showVoiceDialog = false },
             onConfirm = { parsedTx, chosenPaymentMethod ->
                 if (parsedTx.amount > 0) {
-                    amountText = parsedTx.amount.toLong().toString()
+                    amountText = Formatters.formatAmountInput(parsedTx.amount.toLong().toString())
                 }
                 concept = parsedTx.concept
                 selectedCategory = parsedTx.category

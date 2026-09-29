@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
 import com.example.data.entity.SavingsGoalEntity
 import com.example.ui.components.Formatters
 import com.example.ui.theme.CoralRed
@@ -73,7 +74,12 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.SurfaceDark2
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
 import com.example.ui.theme.TitaniumDarkCard
@@ -83,6 +89,7 @@ import com.example.ui.theme.TitaniumPurple
 import com.example.ui.theme.TitaniumPurpleLight
 import com.example.ui.theme.TitaniumTextPrimary
 import com.example.ui.theme.TitaniumTextSecondary
+import com.example.ui.theme.TitaniumTextTertiary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -577,7 +584,7 @@ private fun GoalItemRow(
 }
 
 @Composable
-private fun ContributeDialog(
+fun ContributeDialog(
     goal: SavingsGoalEntity,
     onDismiss: () -> Unit,
     onConfirm: (Double) -> Unit
@@ -588,34 +595,84 @@ private fun ContributeDialog(
         onDismissRequest = onDismiss,
         containerColor = SurfaceWhite,
         title = {
-            Text("Aportar a ${goal.name}", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TitaniumTextPrimary)
+            Text("Abonar a ${goal.name}", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TitaniumTextPrimary)
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Ingresa el valor a abonar:", fontFamily = PoppinsFontFamily, fontSize = 13.sp, color = TitaniumTextSecondary)
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                val remaining = (goal.targetAmount - goal.savedAmount).coerceAtLeast(0.0)
+                Text(
+                    text = "Ahorrado: ${Formatters.formatMoney(goal.savedAmount)} de ${Formatters.formatMoney(goal.targetAmount)} (Faltan ${Formatters.formatMoney(remaining)})",
+                    fontFamily = PoppinsFontFamily,
+                    fontSize = 12.sp,
+                    color = TitaniumTextSecondary
+                )
                 OutlinedTextField(
                     value = amountText,
-                    onValueChange = { input -> amountText = input.filter { it.isDigit() } },
-                    label = { Text("Monto a aportar") },
-                    prefix = { Text("$ ") },
+                    onValueChange = { input -> amountText = Formatters.formatAmountInput(input) },
+                    label = { Text("Monto a abonar", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                // Quick Chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    val quickAmounts = listOf(20000L to "+20K", 50000L to "+50K", 100000L to "+100K", 200000L to "+200K")
+                    quickAmounts.forEach { (qty, label) ->
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable {
+                                    val current = Formatters.parseAmountInput(amountText)
+                                    amountText = Formatters.formatAmountInput((current + qty).toLong().toString())
+                                },
+                            shape = RoundedCornerShape(8.dp),
+                            color = ElectricBlueLight
+                        ) {
+                            Text(
+                                text = label,
+                                fontFamily = PoppinsFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp,
+                                color = ElectricBlue,
+                                modifier = Modifier.padding(vertical = 6.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = Formatters.parseAmountInput(amountText)
                     onConfirm(amount)
                 },
-                enabled = (amountText.toDoubleOrNull() ?: 0.0) > 0,
+                enabled = Formatters.parseAmountInput(amountText) > 0,
                 colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -631,14 +688,14 @@ private fun ContributeDialog(
 }
 
 @Composable
-private fun GoalDialog(
+fun GoalDialog(
     goal: SavingsGoalEntity?,
     onDismiss: () -> Unit,
     onConfirm: (SavingsGoalEntity) -> Unit
 ) {
     var name by remember { mutableStateOf(goal?.name ?: "") }
-    var targetText by remember { mutableStateOf(goal?.targetAmount?.toLong()?.toString() ?: "") }
-    var savedText by remember { mutableStateOf(goal?.savedAmount?.toLong()?.toString() ?: "0") }
+    var targetText by remember { mutableStateOf(goal?.targetAmount?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "") }
+    var savedText by remember { mutableStateOf(goal?.savedAmount?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "0") }
     var selectedIcon by remember { mutableStateOf(goal?.iconName ?: "flight") }
 
     val iconOptions = listOf(
@@ -669,11 +726,24 @@ private fun GoalDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre (ej. Viaje a Cancún, Computador)") },
+                    label = { Text("Nombre (ej. Viaje a Cancún, Computador)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -681,14 +751,27 @@ private fun GoalDialog(
 
                 OutlinedTextField(
                     value = targetText,
-                    onValueChange = { input -> targetText = input.filter { it.isDigit() } },
-                    label = { Text("Monto objetivo") },
-                    prefix = { Text("$ ") },
+                    onValueChange = { input -> targetText = Formatters.formatAmountInput(input) },
+                    label = { Text("Monto objetivo", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -696,14 +779,27 @@ private fun GoalDialog(
 
                 OutlinedTextField(
                     value = savedText,
-                    onValueChange = { input -> savedText = input.filter { it.isDigit() } },
-                    label = { Text("Ahorrado inicialmente") },
-                    prefix = { Text("$ ") },
+                    onValueChange = { input -> savedText = Formatters.formatAmountInput(input) },
+                    label = { Text("Ahorrado inicialmente", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -749,8 +845,8 @@ private fun GoalDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val target = targetText.toDoubleOrNull() ?: 0.0
-                    val saved = savedText.toDoubleOrNull() ?: 0.0
+                    val target = Formatters.parseAmountInput(targetText)
+                    val saved = Formatters.parseAmountInput(savedText)
                     val entity = goal?.copy(
                         name = name.trim(),
                         targetAmount = target,
@@ -766,7 +862,7 @@ private fun GoalDialog(
                     )
                     onConfirm(entity)
                 },
-                enabled = name.isNotBlank() && (targetText.toDoubleOrNull() ?: 0.0) > 0,
+                enabled = name.isNotBlank() && (Formatters.parseAmountInput(targetText) > 0),
                 colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
                 shape = RoundedCornerShape(12.dp)
             ) {

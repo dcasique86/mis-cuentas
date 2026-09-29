@@ -3,54 +3,61 @@
     android:height="200dp"
     android:viewportWidth="200"
     android:viewportHeight="200">
-    <!-- Background Card -->
+    <!-- Dark Petrol Card Container -->
     <path
-        android:fillColor="#F8F5EF"
-        android:strokeColor="#ECE7DE"
+        android:fillColor="#0F2D3A"
+        android:strokeColor="#1E4A5A"
         android:strokeWidth="2"
         android:pathData="M24,10 H176 A14,14 0 0 1 190,24 V176 A14,14 0 0 1 176,190 H24 A14,14 0 0 1 10,176 V24 A14,14 0 0 1 24,10 Z"/>
 
-    <!-- App Icon badge -->
+    <!-- App Icon badge: Dark container with gold outline -->
     <path
-        android:fillColor="#0F4D3C"
+        android:fillColor="#142028"
+        android:strokeColor="#C79A3A"
+        android:strokeWidth="1.2"
         android:pathData="M30,30 H54 A6,6 0 0 1 60,36 V60 A6,6 0 0 1 54,66 H30 A6,6 0 0 1 24,60 V36 A6,6 0 0 1 30,30 Z"/>
+    <!-- Wallet in Gold -->
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#C79A3A"
         android:pathData="M31,44 H53 V52 H31 Z"/>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#E8C678"
         android:pathData="M44,48 A2,2 0 1 1 40,48 A2,2 0 1 1 44,48 Z"/>
 
-    <!-- App Title Bar (Lines simulating text) -->
+    <!-- App Title Bar: "Mis Cuentas" (White) & subtitle (Slate) -->
     <path
-        android:fillColor="#18201E"
+        android:fillColor="#EDEDED"
         android:pathData="M68,36 H120 V44 H68 Z"/>
     <path
-        android:fillColor="#7A8B82"
+        android:fillColor="#94A3B8"
         android:pathData="M68,48 H145 V54 H68 Z"/>
 
     <!-- Refresh icon circle on top right -->
     <path
-        android:fillColor="#ECE7DE"
+        android:fillColor="#1E4A5A"
         android:pathData="M165,42 A8,8 0 1 1 149,42 A8,8 0 1 1 165,42 Z"/>
-
-    <!-- Divider or spacing -->
+    <path
+        android:fillColor="#EDEDED"
+        android:pathData="M155,39 H159 V45 H155 Z"/>
 
     <!-- Label "Efectivo disponible" -->
     <path
-        android:fillColor="#7A8B82"
-        android:pathData="M26,90 H105 V96 H26 Z"/>
+        android:fillColor="#94A3B8"
+        android:pathData="M26,90 H115 V96 H26 Z"/>
 
-    <!-- Balance Number "$ 13.620" -->
+    <!-- Balance Number "$ 1.250.000" (Bright White) -->
     <path
-        android:fillColor="#0F4D3C"
-        android:pathData="M26,108 H150 V132 H26 Z"/>
+        android:fillColor="#EDEDED"
+        android:pathData="M26,108 H155 V132 H26 Z"/>
 
-    <!-- Green pill badge "↑ + $650 hoy" -->
+    <!-- Green pill badge "↑ + $65.000 hoy" -->
     <path
-        android:fillColor="#E6F4EA"
-        android:pathData="M34,146 H126 A8,8 0 0 1 134,154 V154 A8,8 0 0 1 126,162 H34 A8,8 0 0 1 26,154 V154 A8,8 0 0 1 34,146 Z"/>
+        android:fillColor="#123528"
+        android:strokeColor="#34D399"
+        android:strokeWidth="1"
+        android:pathData="M34,146 H136 A8,8 0 0 1 144,154 V156 A8,8 0 0 1 136,164 H34 A8,8 0 0 1 26,156 V154 A8,8 0 0 1 34,146 Z"/>
     <path
-        android:fillColor="#1E7E45"
-        android:pathData="M40,152 H118 V156 H40 Z"/>
+        android:fillColor="#34D399"
+        android:pathData="M38,152 H132 V158 H38 Z"/>
 </vector>
+

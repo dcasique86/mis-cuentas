@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.entity.DailyClosingEntity
@@ -57,6 +58,10 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
@@ -85,7 +90,7 @@ fun DailyClosingScreen(
     var closingNote by remember { mutableStateOf("") }
     var saveSuccessFeedback by remember { mutableStateOf(false) }
 
-    val actualCash = actualCashText.toDoubleOrNull()
+    val actualCash = if (actualCashText.isNotBlank()) Formatters.parseAmountInput(actualCashText) else null
     val difference = if (actualCash != null) actualCash - expectedCash else null
 
     val todayFormatted = remember {
@@ -352,16 +357,15 @@ fun DailyClosingScreen(
                         OutlinedTextField(
                             value = actualCashText,
                             onValueChange = { input ->
-                                val clean = input.filter { it.isDigit() || it == '.' }
-                                actualCashText = clean
+                                actualCashText = Formatters.formatAmountInput(input)
                                 saveSuccessFeedback = false
                             },
                             placeholder = {
                                 Text(
-                                    text = "$ 0",
+                                    text = "0",
                                     fontFamily = PoppinsFontFamily,
-                                    fontSize = 20.sp,
-                                    color = TitaniumTextSecondary
+                                    fontSize = 18.sp,
+                                    color = Color(0xFF94A3B8)
                                 )
                             },
                             prefix = {
@@ -369,18 +373,29 @@ fun DailyClosingScreen(
                                     text = "$ ",
                                     fontFamily = PoppinsFontFamily,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    color = ElectricBlue
+                                    fontSize = 18.sp,
+                                    color = GoldLight
                                 )
                             },
+                            textStyle = TextStyle(
+                                fontFamily = PoppinsFontFamily,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            ),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(14.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("input_actual_cash"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ElectricBlue,
-                                unfocusedBorderColor = TitaniumBorder
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedContainerColor = PetrolDarkest,
+                                unfocusedContainerColor = PetrolDarkest,
+                                focusedBorderColor = GoldPrimary,
+                                unfocusedBorderColor = PetrolLight,
+                                cursorColor = GoldPrimary
                             )
                         )
 
@@ -392,21 +407,17 @@ fun DailyClosingScreen(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = TitaniumLightBg,
+                                color = PetrolDarkest,
                                 modifier = Modifier.clickable {
-                                    actualCashText = if (expectedCash % 1.0 == 0.0) {
-                                        expectedCash.toInt().toString()
-                                    } else {
-                                        expectedCash.toString()
-                                    }
+                                    actualCashText = Formatters.formatAmountInput(expectedCash.toLong().toString())
                                 }
                             ) {
                                 Text(
-                                    text = "Usar esperado ($ ${expectedCash.toInt()})",
+                                    text = "Usar esperado (${Formatters.formatMoney(expectedCash)})",
                                     fontFamily = PoppinsFontFamily,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 11.sp,
-                                    color = ElectricBlue,
+                                    color = GoldLight,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                 )
                             }
@@ -497,15 +508,26 @@ fun DailyClosingScreen(
                                 Text(
                                     text = "Nota u observación (ej. Día lluvioso, ventas bajas)",
                                     fontFamily = PoppinsFontFamily,
-                                    fontSize = 12.sp,
-                                    color = TitaniumTextSecondary
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF94A3B8)
                                 )
                             },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            textStyle = TextStyle(
+                                fontFamily = PoppinsFontFamily,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White
+                            ),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ElectricBlue,
-                                unfocusedBorderColor = TitaniumBorder
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedContainerColor = PetrolDarkest,
+                                unfocusedContainerColor = PetrolDarkest,
+                                focusedBorderColor = GoldPrimary,
+                                unfocusedBorderColor = PetrolLight,
+                                cursorColor = GoldPrimary
                             ),
                             maxLines = 2
                         )

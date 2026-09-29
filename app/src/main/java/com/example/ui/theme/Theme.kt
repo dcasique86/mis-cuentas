@@ -2,61 +2,45 @@ package com.example.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val MisCuentasLightColorScheme = lightColorScheme(
-    primary = ElectricBlue,
-    onPrimary = Color.White,
-    primaryContainer = ElectricBlueLight,
-    onPrimaryContainer = ElectricBlueDark,
-    secondary = EmeraldGreen,
-    onSecondary = Color.White,
-    secondaryContainer = EmeraldGreenLight,
-    onSecondaryContainer = EmeraldGreenDark,
-    tertiary = CoralRed,
-    onTertiary = Color.White,
-    tertiaryContainer = CoralRedLight,
-    onTertiaryContainer = CoralRed,
-    background = TitaniumLightBg,
-    onBackground = TitaniumTextPrimary,
-    surface = SurfaceWhite,
-    onSurface = TitaniumTextPrimary,
-    surfaceVariant = TitaniumLightBg,
-    onSurfaceVariant = TitaniumTextSecondary,
-    outline = TitaniumBorder,
-    outlineVariant = TitaniumDivider,
-    error = CoralRed,
-    onError = Color.White
-)
-
+// =================================================================
+// Esquema de Colores Dark Mode Exclusivo "Mis Cuentas"
+// =================================================================
 private val MisCuentasDarkColorScheme = darkColorScheme(
-    primary = ElectricBlue,
-    onPrimary = Color.White,
-    primaryContainer = TitaniumDarkElevated,
-    onPrimaryContainer = Color.White,
-    secondary = EmeraldGreen,
-    onSecondary = Color.White,
-    background = TitaniumDarkCard,
-    onBackground = Color.White,
-    surface = TitaniumDarkCard,
-    onSurface = Color.White,
-    surfaceVariant = TitaniumDarkElevated,
-    onSurfaceVariant = TitaniumTextSecondary,
-    outline = TitaniumDarkElevated,
-    error = CoralRed,
+    primary = GoldPrimary,
+    onPrimary = Color(0xFF14191E),
+    primaryContainer = GoldContainer,
+    onPrimaryContainer = GoldLight,
+    secondary = PetrolLight,
+    onSecondary = TextPrimary,
+    secondaryContainer = SurfaceDark2,
+    onSecondaryContainer = TextPrimary,
+    tertiary = GreenIncome,
+    onTertiary = Color(0xFF0F1E17),
+    tertiaryContainer = GreenIncomeBg,
+    onTertiaryContainer = GreenIncome,
+    background = PetrolDark,
+    onBackground = TextPrimary,
+    surface = SurfaceDark1,
+    onSurface = TextPrimary,
+    surfaceVariant = SurfaceDark2,
+    onSurfaceVariant = TextSecondary,
+    outline = SurfaceDarkBorder,
+    outlineVariant = SurfaceDarkDivider,
+    error = RedExpense,
     onError = Color.White
 )
 
 @Composable
 fun MyApplicationTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = true, // Siempre modo oscuro
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = MisCuentasLightColorScheme,
+        colorScheme = MisCuentasDarkColorScheme,
         typography = Typography,
         content = content
     )

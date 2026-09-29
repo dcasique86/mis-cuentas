@@ -17,7 +17,7 @@
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_widget_app_logo_mark_light"
+            android:src="@drawable/ic_app_wallet_icon"
             android:contentDescription="Mis Cuentas Logo" />
 
         <LinearLayout
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mis Cuentas"
-                android:textColor="#FFFFFF"
+                android:textColor="#EDEDED"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tu dinero, en orden."
-                android:textColor="#9AC7B6"
+                android:textColor="#94A3B8"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             android:text="Actualizado"
-            android:textColor="#85B4A1"
+            android:textColor="#94A3B8"
             android:textSize="10sp" />
 
         <ImageView
@@ -57,11 +57,11 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:padding="3dp"
-            android:src="@drawable/ic_widget_refresh_white"
+            android:src="@drawable/ic_widget_refresh"
             android:contentDescription="Actualizar" />
     </LinearLayout>
 
-    <Space
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="10dp" />
 
@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Efectivo disponible"
-                android:textColor="#9AC7B6"
+                android:textColor="#94A3B8"
                 android:textSize="11sp" />
 
             <TextView
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="$ 0"
-                android:textColor="#FFFFFF"
+                android:textColor="#EDEDED"
                 android:textSize="26sp"
                 android:textStyle="bold" />
 
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="— $0 hoy"
-                android:textColor="#4CE294"
+                android:textColor="#34D399"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1.2"
-            android:background="@drawable/bg_widget_dark_panel"
+            android:background="@drawable/bg_widget_metrics_box"
             android:orientation="vertical"
             android:padding="8dp">
 
@@ -144,7 +144,7 @@
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:text="Ingresos"
-                    android:textColor="#A5CBBF"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -152,12 +152,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$ 0"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#34D399"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <Space
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="6dp" />
 
@@ -187,7 +187,7 @@
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:text="Gastos"
-                    android:textColor="#A5CBBF"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -195,12 +195,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$ 0"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#F87171"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <Space
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="6dp" />
 
@@ -230,7 +230,7 @@
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:text="Balance"
-                    android:textColor="#A5CBBF"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -238,7 +238,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$ 0"
-                    android:textColor="#4CE294"
+                    android:textColor="#34D399"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -246,7 +246,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Space
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="12dp" />
 
@@ -271,7 +271,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+"
-                android:textColor="#FFFFFF"
+                android:textColor="#34D399"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -279,7 +279,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ingreso"
-                android:textColor="#FFFFFF"
+                android:textColor="#34D399"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -299,7 +299,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="—"
-                android:textColor="#FFFFFF"
+                android:textColor="#F87171"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -307,7 +307,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Gasto"
-                android:textColor="#FFFFFF"
+                android:textColor="#F87171"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -334,7 +334,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:text="Transferir"
-                android:textColor="#FFFFFF"
+                android:textColor="#C79A3A"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -361,7 +361,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:text="Más"
-                android:textColor="#FFFFFF"
+                android:textColor="#94A3B8"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>

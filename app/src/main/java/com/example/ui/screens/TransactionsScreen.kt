@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
@@ -84,6 +85,7 @@ fun TransactionsScreen(
     onDeleteTransaction: (TransactionEntity) -> Unit,
     onAddTransactionClick: (() -> Unit)? = null,
     onVoiceInputClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var selectedTransactionForDetails by remember { mutableStateOf<TransactionEntity?>(null) }
@@ -156,22 +158,41 @@ fun TransactionsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "MIS CUENTAS",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
-                        letterSpacing = 0.8.sp,
-                        color = TitaniumTextSecondary
-                    )
-                    Text(
-                        text = "Movimientos",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        color = TitaniumTextPrimary
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (onBackClick != null) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(SurfaceWhite, CircleShape)
+                                .testTag("transactions_back_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver a Inicio",
+                                tint = TitaniumTextPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    Column {
+                        Text(
+                            text = "MIS CUENTAS",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp,
+                            color = TitaniumTextSecondary
+                        )
+                        Text(
+                            text = "Movimientos",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            color = TitaniumTextPrimary
+                        )
+                    }
                 }
 
                 Row(

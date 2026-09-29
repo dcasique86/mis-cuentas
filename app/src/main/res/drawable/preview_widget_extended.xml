@@ -3,118 +3,141 @@
     android:height="260dp"
     android:viewportWidth="320"
     android:viewportHeight="260">
-    <!-- Deep Green Card Container -->
+    <!-- Dark Petrol Card Container -->
     <path
-        android:fillColor="#0D382C"
-        android:strokeColor="#195441"
+        android:fillColor="#0F2D3A"
+        android:strokeColor="#1E4A5A"
         android:strokeWidth="2"
         android:pathData="M24,10 H296 A14,14 0 0 1 310,24 V236 A14,14 0 0 1 296,250 H24 A14,14 0 0 1 10,236 V24 A14,14 0 0 1 24,10 Z"/>
 
-    <!-- App Logo Icon -->
+    <!-- App Logo Icon Badge (Dark surface + Gold wallet) -->
     <path
-        android:fillColor="#175845"
+        android:fillColor="#142028"
+        android:strokeColor="#C79A3A"
+        android:strokeWidth="1.2"
         android:pathData="M28,24 H48 A5,5 0 0 1 53,29 V43 A5,5 0 0 1 48,48 H28 A5,5 0 0 1 23,43 V29 A5,5 0 0 1 28,24 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#C79A3A"
         android:pathData="M29,33 H47 V39 H29 Z"/>
+    <path
+        android:fillColor="#E8C678"
+        android:pathData="M40,36 A1.5,1.5 0 1 1 37,36 A1.5,1.5 0 1 1 40,36 Z"/>
 
-    <!-- Title "Mis Cuentas" & subtitle in white/mint -->
+    <!-- Title "Mis Cuentas" (White) & subtitle (Slate) -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M60,26 H120 V34 H60 Z"/>
+        android:fillColor="#EDEDED"
+        android:pathData="M60,26 H130 V34 H60 Z"/>
     <path
-        android:fillColor="#9AC7B6"
-        android:pathData="M60,38 H140 V43 H60 Z"/>
+        android:fillColor="#94A3B8"
+        android:pathData="M60,38 H150 V43 H60 Z"/>
+
+    <!-- Refresh circle top right -->
+    <path
+        android:fillColor="#1E4A5A"
+        android:pathData="M290,34 A7,7 0 1 1 276,34 A7,7 0 1 1 290,34 Z"/>
+    <path
+        android:fillColor="#EDEDED"
+        android:pathData="M281,32 H285 V36 H281 Z"/>
 
     <!-- Left section: Balance -->
     <path
-        android:fillColor="#9AC7B6"
-        android:pathData="M24,66 H95 V72 H24 Z"/>
+        android:fillColor="#94A3B8"
+        android:pathData="M24,66 H105 V72 H24 Z"/>
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M24,78 H135 V98 H24 Z"/>
+        android:fillColor="#EDEDED"
+        android:pathData="M24,78 H145 V98 H24 Z"/>
     <path
-        android:fillColor="#71C2A7"
-        android:pathData="M24,104 H105 V111 H24 Z"/>
+        android:fillColor="#34D399"
+        android:pathData="M24,104 H115 V111 H24 Z"/>
 
     <!-- Right section: Today Breakdown Dark Panel -->
     <path
-        android:fillColor="#08281E"
-        android:strokeColor="#144A3A"
+        android:fillColor="#142028"
+        android:strokeColor="#1E3F4E"
         android:strokeWidth="1"
         android:pathData="M166,62 H290 A8,8 0 0 1 298,70 V126 A8,8 0 0 1 290,134 H166 A8,8 0 0 1 158,126 V70 A8,8 0 0 1 166,62 Z"/>
 
+    <!-- Breakdown items: Ingresos (Green), Gastos (Coral), Neto (Gold) -->
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#34D399"
         android:pathData="M172,74 H205 V79 H172 Z"/>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#34D399"
         android:pathData="M248,74 H288 V79 H248 Z"/>
 
     <path
-        android:fillColor="#FF8F6F"
+        android:fillColor="#F87171"
         android:pathData="M172,92 H195 V97 H172 Z"/>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#F87171"
         android:pathData="M255,92 H288 V97 H255 Z"/>
 
     <path
-        android:fillColor="#9AC7B6"
+        android:fillColor="#C79A3A"
         android:pathData="M172,110 H205 V116 H172 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#C79A3A"
         android:pathData="M245,110 H288 V116 H245 Z"/>
 
     <!-- Activity Mini Bars in Extended widget -->
     <path
-        android:fillColor="#1F5A47"
-        android:pathData="M24,136 H140 V140 H24 Z"/>
+        android:fillColor="#1E3F4E"
+        android:pathData="M24,136 H140 V139 H24 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#34D399"
         android:pathData="M24,146 H32 V162 H24 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#34D399"
         android:pathData="M38,140 H46 V162 H38 Z"/>
     <path
-        android:fillColor="#FF8F6F"
+        android:fillColor="#F87171"
         android:pathData="M52,150 H60 V162 H52 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#34D399"
         android:pathData="M66,134 H74 V162 H66 Z"/>
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#34D399"
         android:pathData="M80,144 H88 V162 H80 Z"/>
 
     <!-- 4 Action Buttons Row: + Ingreso, - Gasto, Transferir, Mas -->
-    <!-- 1: + Ingreso (Mint/Green) -->
+    <!-- 1: + Ingreso (Green capsule) -->
     <path
-        android:fillColor="#71C2A7"
+        android:fillColor="#123528"
+        android:strokeColor="#34D399"
+        android:strokeWidth="1"
         android:pathData="M25,188 H85 A6,6 0 0 1 91,194 V226 A6,6 0 0 1 85,232 H25 A6,6 0 0 1 19,226 V194 A6,6 0 0 1 25,188 Z"/>
     <path
-        android:fillColor="#0D382C"
+        android:fillColor="#34D399"
         android:pathData="M35,207 H75 V213 H35 Z"/>
 
-    <!-- 2: - Gasto (Coral) -->
+    <!-- 2: - Gasto (Coral capsule) -->
     <path
-        android:fillColor="#FF8F6F"
+        android:fillColor="#3B1C22"
+        android:strokeColor="#F87171"
+        android:strokeWidth="1"
         android:pathData="M97,188 H157 A6,6 0 0 1 163,194 V226 A6,6 0 0 1 157,232 H97 A6,6 0 0 1 91,226 V194 A6,6 0 0 1 97,188 Z"/>
     <path
-        android:fillColor="#0D382C"
+        android:fillColor="#F87171"
         android:pathData="M107,207 H147 V213 H107 Z"/>
 
-    <!-- 3: Transferir (Dark translucent) -->
+    <!-- 3: Transferir (Gold capsule) -->
     <path
-        android:fillColor="#164D3D"
+        android:fillColor="#1A2D37"
+        android:strokeColor="#243B47"
+        android:strokeWidth="1"
         android:pathData="M169,188 H229 A6,6 0 0 1 235,194 V226 A6,6 0 0 1 229,232 H169 A6,6 0 0 1 163,226 V194 A6,6 0 0 1 169,188 Z"/>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#C79A3A"
         android:pathData="M175,207 H223 V213 H175 Z"/>
 
-    <!-- 4: Mas (Dark translucent) -->
+    <!-- 4: Mas (Muted capsule) -->
     <path
-        android:fillColor="#164D3D"
+        android:fillColor="#1A2D37"
+        android:strokeColor="#243B47"
+        android:strokeWidth="1"
         android:pathData="M241,188 H295 A6,6 0 0 1 301,194 V226 A6,6 0 0 1 295,232 H241 A6,6 0 0 1 235,226 V194 A6,6 0 0 1 241,188 Z"/>
     <path
-        android:fillColor="#FFFFFF"
+        android:fillColor="#94A3B8"
         android:pathData="M255,207 H281 V213 H255 Z"/>
 </vector>
+

@@ -7,4 +7,24 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Paleta Oficial Mis Cuentas (Dark Mode Premium) -->
+    <color name="petrol_dark">#0F2D3A</color>
+    <color name="petrol_darkest">#081A22</color>
+    <color name="petrol_light">#1E4A5A</color>
+    <color name="petrol_border">#1E3F4E</color>
+    <color name="gold_primary">#C79A3A</color>
+    <color name="gold_light">#E8C678</color>
+    <color name="gold_container">#2E2413</color>
+    <color name="surface_dark1">#1A1A1A</color>
+    <color name="surface_dark2">#2A2F36</color>
+    <color name="surface_dark_card">#142028</color>
+    <color name="surface_dark_border">#243B47</color>
+    <color name="text_primary">#EDEDED</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="green_income">#34D399</color>
+    <color name="green_income_bg">#123528</color>
+    <color name="red_expense">#F87171</color>
+    <color name="red_expense_bg">#3B1C22</color>
 </resources>
+

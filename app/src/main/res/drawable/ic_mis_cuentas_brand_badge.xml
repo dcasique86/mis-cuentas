@@ -3,9 +3,9 @@
     android:height="48dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
-    <!-- Warm Terracotta/Rust Rounded Icon Container -->
+    <!-- Premium Gold Rounded Icon Container -->
     <path
-        android:fillColor="#D87858"
+        android:fillColor="#C79A3A"
         android:pathData="M37,4H11C7.13,4 4,7.13 4,11v26c0,3.87 3.13,7 7,7h26c3.87,0 7,-3.13 7,-7V11C44,7.13 40.87,4 37,4z" />
     <!-- Wallet / Purse Body in White -->
     <path
@@ -15,8 +15,9 @@
     <path
         android:fillColor="#F6EFE9"
         android:pathData="M13,16h22c1.1,0 2,0.9 2,2v2H11v-2c0,-1.1 0.9,-2 2,-2z" />
-    <!-- Coin / Clasp Button in Warm Terracotta -->
+    <!-- Coin / Clasp Button in Gold -->
     <path
-        android:fillColor="#D87858"
+        android:fillColor="#C79A3A"
         android:pathData="M31,27m-3,0a3,3 0 1,0 6,0a3,3 0 1,0 -6,0" />
 </vector>
+

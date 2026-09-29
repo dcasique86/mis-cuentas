@@ -44,17 +44,24 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.TextStyle
 import com.example.ui.theme.Coral
 import com.example.ui.theme.Cream
 import com.example.ui.theme.DeepGreen
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
 import com.example.ui.theme.NeutralGray
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.Sand
 import com.example.ui.theme.SoftGreen
 import com.example.ui.theme.SoftGreenLight
 import com.example.ui.theme.SuccessGreen
+import com.example.ui.theme.SurfaceDark2
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextTertiary
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -69,7 +76,7 @@ fun AddDebtDialog(
     var amountText by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
 
-    val isValid = name.isNotBlank() && amountText.toDoubleOrNull()?.let { it > 0 } == true
+    val isValid = name.isNotBlank() && (Formatters.parseAmountInput(amountText) > 0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -136,16 +143,31 @@ fun AddDebtDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre o entidad") },
-                    placeholder = { Text("Ej. Carlos, Banco, Tarjeta...") },
+                    label = { Text("Nombre o entidad", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    placeholder = { Text("Ej. Carlos, Banco, Tarjeta...", color = Color(0xFF94A3B8)) },
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("debt_name_input"),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     )
                 )
 
@@ -153,18 +175,33 @@ fun AddDebtDialog(
 
                 OutlinedTextField(
                     value = amountText,
-                    onValueChange = { input -> amountText = input.filter { it.isDigit() } },
-                    label = { Text("Monto total ($)") },
-                    placeholder = { Text("0") },
+                    onValueChange = { input -> amountText = Formatters.formatAmountInput(input) },
+                    label = { Text("Monto total ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    placeholder = { Text("0", color = Color(0xFF94A3B8)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("debt_amount_input"),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     )
                 )
 
@@ -173,14 +210,29 @@ fun AddDebtDialog(
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    label = { Text("Nota (opcional)") },
-                    placeholder = { Text("Ej. Motivo o cuotas") },
+                    label = { Text("Nota (opcional)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    placeholder = { Text("Ej. Motivo o cuotas", color = Color(0xFF94A3B8)) },
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     )
                 )
             }
@@ -188,7 +240,7 @@ fun AddDebtDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = Formatters.parseAmountInput(amountText)
                     onConfirm(
                         DebtEntity(
                             name = name.trim(),
@@ -229,7 +281,7 @@ fun PayDebtDialog(
     var note by remember { mutableStateOf("") }
 
     val remaining = debt.remainingAmount
-    val isValid = amountText.toDoubleOrNull()?.let { it > 0 && it <= remaining + 0.01 } == true
+    val isValid = Formatters.parseAmountInput(amountText).let { it > 0 && it <= remaining + 0.01 }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -271,18 +323,33 @@ fun PayDebtDialog(
 
                 OutlinedTextField(
                     value = amountText,
-                    onValueChange = { input -> amountText = input.filter { it.isDigit() } },
-                    label = { Text("Monto a pagar ($)") },
-                    placeholder = { Text("0") },
+                    onValueChange = { input -> amountText = Formatters.formatAmountInput(input) },
+                    label = { Text("Monto a pagar ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    placeholder = { Text("0", color = Color(0xFF94A3B8)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("pay_debt_amount_input"),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     )
                 )
 
@@ -295,7 +362,7 @@ fun PayDebtDialog(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
-                                amountText = remaining.toInt().toString()
+                                amountText = Formatters.formatAmountInput(remaining.toInt().toString())
                             },
                         color = SoftGreenLight
                     ) {
@@ -331,7 +398,7 @@ fun PayDebtDialog(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { method = m },
-                            color = if (isSelected) DeepGreen else Color.White
+                            color = if (isSelected) DeepGreen else SurfaceDark2
                         ) {
                             Text(
                                 text = m,
@@ -350,7 +417,7 @@ fun PayDebtDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = Formatters.parseAmountInput(amountText)
                     onConfirm(amount, method, note.trim())
                 },
                 enabled = isValid,

@@ -75,6 +75,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
 import com.example.data.entity.AccountEntity
 import com.example.data.entity.AccountType
 import com.example.ui.components.Formatters
@@ -86,6 +87,10 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
@@ -649,15 +654,28 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(14.dp))
                     OutlinedTextField(
                         value = adjustAmountText,
-                        onValueChange = { adjustAmountText = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("Saldo real") },
-                        prefix = { Text("$ ") },
+                        onValueChange = { input -> adjustAmountText = Formatters.formatAmountInput(input) },
+                        label = { Text("Saldo real", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                        prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElectricBlue,
-                            unfocusedBorderColor = TitaniumBorder
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = PetrolDarkest,
+                            unfocusedContainerColor = PetrolDarkest,
+                            focusedBorderColor = GoldPrimary,
+                            unfocusedBorderColor = PetrolLight,
+                            focusedLabelColor = GoldLight,
+                            unfocusedLabelColor = Color(0xFFE2E8F0),
+                            cursorColor = GoldPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -665,12 +683,25 @@ fun SettingsScreen(
                     OutlinedTextField(
                         value = adjustNote,
                         onValueChange = { adjustNote = it },
-                        label = { Text("Motivo / Nota") },
+                        label = { Text("Motivo / Nota", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElectricBlue,
-                            unfocusedBorderColor = TitaniumBorder
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = PetrolDarkest,
+                            unfocusedContainerColor = PetrolDarkest,
+                            focusedBorderColor = GoldPrimary,
+                            unfocusedBorderColor = PetrolLight,
+                            focusedLabelColor = GoldLight,
+                            unfocusedLabelColor = Color(0xFFE2E8F0),
+                            cursorColor = GoldPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -679,14 +710,14 @@ fun SettingsScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val amount = adjustAmountText.toDoubleOrNull() ?: currentBalance
+                        val amount = if (adjustAmountText.isNotBlank()) Formatters.parseAmountInput(adjustAmountText) else currentBalance
                         onAdjustCash(amount, adjustNote)
                         showAdjustDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Guardar ajuste", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold)
+                    Text("Guardar ajuste", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold, color = Color.White)
                 }
             },
             dismissButton = {

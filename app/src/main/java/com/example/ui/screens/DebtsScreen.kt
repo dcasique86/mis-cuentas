@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -85,6 +86,7 @@ fun DebtsScreen(
     onAddDebt: (DebtEntity) -> Unit,
     onPayDebt: (debtId: Long, amount: Double, method: String, note: String) -> Unit,
     onDeleteDebt: (DebtEntity) -> Unit,
+    onBackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // selectedTabIsIOwe: true -> "Debo" (Por pagar), false -> "Me deben" (Por cobrar)
@@ -148,22 +150,41 @@ fun DebtsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "PRÉSTAMOS Y COBROS",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
-                        letterSpacing = 0.8.sp,
-                        color = TitaniumTextSecondary
-                    )
-                    Text(
-                        text = "Deudas",
-                        fontFamily = PoppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        color = TitaniumTextPrimary
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (onBackClick != null) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(SurfaceWhite, CircleShape)
+                                .testTag("debts_back_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver a Inicio",
+                                tint = TitaniumTextPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    Column {
+                        Text(
+                            text = "PRÉSTAMOS Y COBROS",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp,
+                            color = TitaniumTextSecondary
+                        )
+                        Text(
+                            text = "Deudas",
+                            fontFamily = PoppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            color = TitaniumTextPrimary
+                        )
+                    }
                 }
             }
 

@@ -64,6 +64,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
 import com.example.data.entity.AccountEntity
 import com.example.data.entity.AccountType
 import com.example.ui.components.Formatters
@@ -73,7 +74,12 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.SurfaceDark2
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
 import com.example.ui.theme.TitaniumDarkCard
@@ -81,6 +87,7 @@ import com.example.ui.theme.TitaniumDivider
 import com.example.ui.theme.TitaniumLightBg
 import com.example.ui.theme.TitaniumTextPrimary
 import com.example.ui.theme.TitaniumTextSecondary
+import com.example.ui.theme.TitaniumTextTertiary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -469,11 +476,11 @@ fun CupertinoAccountDialog(
     onConfirm: (AccountEntity) -> Unit
 ) {
     var name by remember { mutableStateOf(account?.name ?: "") }
-    var balanceText by remember { mutableStateOf(account?.currentBalance?.toLong()?.toString() ?: "") }
+    var balanceText by remember { mutableStateOf(account?.currentBalance?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "") }
     var selectedType by remember {
         mutableStateOf(account?.type?.let { runCatching { AccountType.valueOf(it) }.getOrNull() } ?: AccountType.WALLET)
     }
-    var creditLimitText by remember { mutableStateOf(account?.creditLimit?.toLong()?.toString() ?: "") }
+    var creditLimitText by remember { mutableStateOf(account?.creditLimit?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "") }
 
     val isEdit = account != null
 
@@ -494,11 +501,26 @@ fun CupertinoAccountDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre (ej. Nequi, Bancolombia)") },
+                    label = { Text("Nombre (ej. Nequi, Bancolombia)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -506,13 +528,28 @@ fun CupertinoAccountDialog(
 
                 OutlinedTextField(
                     value = balanceText,
-                    onValueChange = { input -> balanceText = input.filter { it.isDigit() } },
-                    label = { Text(if (selectedType == AccountType.CREDIT_CARD) "Deuda actual ($)" else "Saldo actual ($)") },
+                    onValueChange = { input -> balanceText = Formatters.formatAmountInput(input) },
+                    label = { Text(if (selectedType == AccountType.CREDIT_CARD) "Deuda actual ($)" else "Saldo actual ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        focusedPlaceholderColor = Color(0xFF94A3B8),
+                        unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -521,13 +558,28 @@ fun CupertinoAccountDialog(
                 if (selectedType == AccountType.CREDIT_CARD) {
                     OutlinedTextField(
                         value = creditLimitText,
-                        onValueChange = { input -> creditLimitText = input.filter { it.isDigit() } },
-                        label = { Text("Límite de crédito ($)") },
+                        onValueChange = { input -> creditLimitText = Formatters.formatAmountInput(input) },
+                        label = { Text("Límite de crédito ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElectricBlue,
-                            unfocusedBorderColor = TitaniumBorder
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = PetrolDarkest,
+                            unfocusedContainerColor = PetrolDarkest,
+                            focusedBorderColor = GoldPrimary,
+                            unfocusedBorderColor = PetrolLight,
+                            focusedLabelColor = GoldLight,
+                            unfocusedLabelColor = Color(0xFFE2E8F0),
+                            focusedPlaceholderColor = Color(0xFF94A3B8),
+                            unfocusedPlaceholderColor = Color(0xFF94A3B8),
+                            cursorColor = GoldPrimary
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -573,8 +625,8 @@ fun CupertinoAccountDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val bal = balanceText.toDoubleOrNull() ?: 0.0
-                    val limit = creditLimitText.toDoubleOrNull()
+                    val bal = Formatters.parseAmountInput(balanceText)
+                    val limit = if (creditLimitText.isNotBlank()) Formatters.parseAmountInput(creditLimitText) else null
                     val icon = when (selectedType) {
                         AccountType.CASH -> "cash"
                         AccountType.WALLET -> "wallet"

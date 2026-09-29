@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Mis Cuentas"
-            android:textColor="#0F4D3C"
+            android:textColor="#EDEDED"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tu dinero, en orden"
-            android:textColor="#7A8B82"
+            android:textColor="#94A3B8"
             android:textSize="10sp" />
     </LinearLayout>
 
@@ -38,7 +38,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="10dp"
-        android:background="#E8E2D5" />
+        android:background="#1E3F4E" />
 
     <!-- Balance Section -->
     <TextView
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$0"
-        android:textColor="#1A2421"
+        android:textColor="#EDEDED"
         android:textSize="26sp"
         android:textStyle="bold" />
 
@@ -55,10 +55,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Efectivo disponible"
-        android:textColor="#7A8B82"
+        android:textColor="#94A3B8"
         android:textSize="12sp" />
 
-    <Space
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:text="Hoy: $0 (Ingresos: $0 · Gastos: $0)"
-        android:textColor="#2D3B36"
+        android:textColor="#94A3B8"
         android:textSize="12sp" />
 
     <!-- Quick Action Buttons -->
@@ -88,7 +88,7 @@
             android:background="@drawable/bg_widget_income_btn"
             android:gravity="center"
             android:text="+ Ingreso"
-            android:textColor="#FFFFFF"
+            android:textColor="#34D399"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -101,7 +101,7 @@
             android:background="@drawable/bg_widget_expense_btn"
             android:gravity="center"
             android:text="- Gasto"
-            android:textColor="#FFFFFF"
+            android:textColor="#F87171"
             android:textSize="13sp"
             android:textStyle="bold" />
     </LinearLayout>

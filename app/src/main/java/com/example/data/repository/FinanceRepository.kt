@@ -164,7 +164,16 @@ class FinanceRepository(
         debtPaymentDao.getPaymentsForDebt(debtId)
 
     suspend fun insertTransaction(transaction: TransactionEntity): Long = withContext(Dispatchers.IO) {
-        transactionDao.insertTransaction(transaction)
+        val txId = transactionDao.insertTransaction(transaction)
+        try {
+            val accounts = accountDao.getAllAccounts().first()
+            val matchedAccount = accounts.find { it.name.equals(transaction.paymentMethod, ignoreCase = true) }
+            if (matchedAccount != null) {
+                val delta = if (transaction.isIncome) transaction.amount else -transaction.amount
+                accountDao.updateAccount(matchedAccount.copy(currentBalance = matchedAccount.currentBalance + delta))
+            }
+        } catch (_: Exception) {}
+        txId
     }
 
     suspend fun updateTransaction(transaction: TransactionEntity) = withContext(Dispatchers.IO) {
@@ -172,6 +181,14 @@ class FinanceRepository(
     }
 
     suspend fun deleteTransaction(transaction: TransactionEntity) = withContext(Dispatchers.IO) {
+        try {
+            val accounts = accountDao.getAllAccounts().first()
+            val matchedAccount = accounts.find { it.name.equals(transaction.paymentMethod, ignoreCase = true) }
+            if (matchedAccount != null) {
+                val delta = if (transaction.isIncome) -transaction.amount else transaction.amount
+                accountDao.updateAccount(matchedAccount.copy(currentBalance = matchedAccount.currentBalance + delta))
+            }
+        } catch (_: Exception) {}
         transactionDao.deleteTransaction(transaction)
     }
 

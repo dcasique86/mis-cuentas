@@ -55,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -68,6 +69,10 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
@@ -599,7 +604,9 @@ fun RecurringDialog(
     onSave: (RecurringTransactionEntity) -> Unit
 ) {
     var description by remember { mutableStateOf(initial?.description ?: "") }
-    var amountText by remember { mutableStateOf(initial?.amount?.toInt()?.toString() ?: "") }
+    var amountText by remember {
+        mutableStateOf(initial?.amount?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "")
+    }
     var isIncome by remember { mutableStateOf(initial?.isIncome ?: false) }
     var category by remember { mutableStateOf(initial?.category ?: "Entretenimiento") }
     var periodicity by remember { mutableStateOf(initial?.periodicity ?: Periodicity.MONTHLY.name) }
@@ -672,28 +679,52 @@ fun RecurringDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Descripción (ej. Netflix, Alquiler)") },
+                    label = { Text("Descripción (ej. Netflix, Alquiler)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        focusedLabelColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     )
                 )
 
                 OutlinedTextField(
                     value = amountText,
-                    onValueChange = { amountText = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Monto ($)") },
-                    prefix = { Text("$ ") },
+                    onValueChange = { input -> amountText = Formatters.formatAmountInput(input) },
+                    label = { Text("Monto ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        focusedLabelColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     )
                 )
 
@@ -777,7 +808,7 @@ fun RecurringDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
+                    val amount = Formatters.parseAmountInput(amountText)
                     if (description.isNotBlank() && amount > 0) {
                         val nextDue = initial?.nextDueDate ?: (System.currentTimeMillis() + 30L * 24L * 3600L * 1000L)
                         onSave(

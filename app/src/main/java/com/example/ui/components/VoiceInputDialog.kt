@@ -64,6 +64,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,12 +77,15 @@ import com.example.ui.theme.GreenIncome
 import com.example.ui.theme.GreenIncomeContainer
 import com.example.ui.theme.Mocha
 import com.example.ui.theme.Peach
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.RedExpense
 import com.example.ui.theme.RedExpenseContainer
 import com.example.ui.theme.Sand
+import com.example.ui.theme.SurfaceDark2
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextTertiary
 import com.example.ui.theme.WarmPeachLight
 import com.example.ui.theme.WarmTerracottaBtn
 import com.example.util.ParsedVoiceTransaction
@@ -326,14 +330,22 @@ fun VoiceInputDialog(
                     placeholder = { Text("Ej: Taxi al aeropuerto 35 mil") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimary
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = WarmTerracottaBtn,
                         focusedLabelColor = WarmTerracottaBtn,
-                        unfocusedBorderColor = Color(0xFFDDD8D2),
+                        unfocusedBorderColor = PetrolLight,
                         focusedTextColor = TextPrimary,
                         unfocusedTextColor = TextPrimary,
-                        focusedContainerColor = Color(0xFFFAF7F2),
-                        unfocusedContainerColor = Color(0xFFFAF7F2)
+                        focusedContainerColor = SurfaceDark2,
+                        unfocusedContainerColor = SurfaceDark2,
+                        focusedPlaceholderColor = TextTertiary,
+                        unfocusedPlaceholderColor = TextTertiary
                     ),
                     trailingIcon = {
                         if (spokenText.isNotBlank()) {

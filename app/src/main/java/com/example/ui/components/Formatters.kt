@@ -34,12 +34,28 @@ object Formatters {
         groupingSeparator = '.'
         decimalSeparator = ','
     }
-    private val decimalFormat = DecimalFormat("#,##0", decimalSymbols)
+    private val decimalFormat = DecimalFormat("#,##0", decimalSymbols).apply {
+        isGroupingUsed = true
+        groupingSize = 3
+    }
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val dateFormat = SimpleDateFormat("dd MMM", Locale("es", "CO"))
 
     fun formatMoney(amount: Double): String {
         return "$ ${decimalFormat.format(amount)}"
+    }
+
+    fun formatAmountInput(input: String): String {
+        val digits = input.filter { it.isDigit() }
+        if (digits.isEmpty()) return ""
+        val trimmed = if (digits.length > 12) digits.substring(0, 12) else digits
+        val number = trimmed.toLongOrNull() ?: return trimmed
+        return decimalFormat.format(number)
+    }
+
+    fun parseAmountInput(formatted: String): Double {
+        val digits = formatted.filter { it.isDigit() }
+        return digits.toDoubleOrNull() ?: 0.0
     }
 
     fun formatMoneySigned(amount: Double, isIncome: Boolean): String {

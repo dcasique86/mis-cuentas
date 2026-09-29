@@ -59,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
 import com.example.data.entity.BudgetEntity
 import com.example.data.entity.TransactionEntity
 import com.example.ui.components.CategoryIcons
@@ -69,7 +70,12 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
+import com.example.ui.theme.SurfaceDark2
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
 import com.example.ui.theme.TitaniumDarkCard
@@ -77,6 +83,7 @@ import com.example.ui.theme.TitaniumDivider
 import com.example.ui.theme.TitaniumLightBg
 import com.example.ui.theme.TitaniumTextPrimary
 import com.example.ui.theme.TitaniumTextSecondary
+import com.example.ui.theme.TitaniumTextTertiary
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -526,7 +533,7 @@ private fun CupertinoBudgetDialog(
 ) {
     val categories = listOf("Comida", "Transporte", "Hogar", "Trabajo", "Tienda", "Entretenimiento", "Salud", "Educación", "Otros")
     var selectedCategory by remember { mutableStateOf(budget?.category ?: "Comida") }
-    var limitText by remember { mutableStateOf(budget?.monthlyLimit?.toLong()?.toString() ?: "") }
+    var limitText by remember { mutableStateOf(budget?.monthlyLimit?.toLong()?.let { Formatters.formatAmountInput(it.toString()) } ?: "") }
 
     val isEdit = budget != null
 
@@ -581,13 +588,27 @@ private fun CupertinoBudgetDialog(
 
                 OutlinedTextField(
                     value = limitText,
-                    onValueChange = { input -> limitText = input.filter { it.isDigit() } },
-                    label = { Text("Límite mensual ($)") },
+                    onValueChange = { input -> limitText = Formatters.formatAmountInput(input) },
+                    label = { Text("Límite mensual ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
+                    prefix = { Text("$ ", color = GoldLight, fontWeight = FontWeight.Bold) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    textStyle = TextStyle(
+                        fontFamily = PoppinsFontFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElectricBlue,
-                        unfocusedBorderColor = TitaniumBorder
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = PetrolDarkest,
+                        unfocusedContainerColor = PetrolDarkest,
+                        focusedBorderColor = GoldPrimary,
+                        unfocusedBorderColor = PetrolLight,
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = Color(0xFFE2E8F0),
+                        cursorColor = GoldPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -597,7 +618,7 @@ private fun CupertinoBudgetDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val limit = limitText.toDoubleOrNull() ?: 0.0
+                    val limit = Formatters.parseAmountInput(limitText)
                     val entity = budget?.copy(
                         category = selectedCategory,
                         monthlyLimit = limit
@@ -608,7 +629,7 @@ private fun CupertinoBudgetDialog(
                     )
                     onConfirm(entity)
                 },
-                enabled = limitText.isNotBlank() && (limitText.toDoubleOrNull() ?: 0.0) > 0,
+                enabled = Formatters.parseAmountInput(limitText) > 0,
                 colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
                 shape = RoundedCornerShape(12.dp)
             ) {

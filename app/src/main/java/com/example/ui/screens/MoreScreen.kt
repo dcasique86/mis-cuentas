@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
@@ -39,6 +40,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -59,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
 import com.example.ui.components.Formatters
 import com.example.ui.components.MisCuentasIcon
 import com.example.ui.components.WidgetShowcaseDialog
@@ -68,6 +71,10 @@ import com.example.ui.theme.ElectricBlue
 import com.example.ui.theme.ElectricBlueLight
 import com.example.ui.theme.EmeraldGreen
 import com.example.ui.theme.EmeraldGreenLight
+import com.example.ui.theme.GoldLight
+import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.PetrolDarkest
+import com.example.ui.theme.PetrolLight
 import com.example.ui.theme.PoppinsFontFamily
 import com.example.ui.theme.SurfaceWhite
 import com.example.ui.theme.TitaniumBorder
@@ -96,6 +103,7 @@ fun MoreScreen(
     onNavigateToRecurring: () -> Unit = {},
     onNavigateToAutoRules: () -> Unit = {},
     onVoiceInputClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showAdjustDialog by remember { mutableStateOf(false) }
@@ -114,22 +122,44 @@ fun MoreScreen(
     ) {
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Screen Header
-        Text(
-            text = "MÁS OPCIONES",
-            fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 11.sp,
-            letterSpacing = 0.8.sp,
-            color = TitaniumTextSecondary
-        )
-        Text(
-            text = "Gestión y Ajustes",
-            fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            color = TitaniumTextPrimary
-        )
+        // Screen Header with Back Button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(SurfaceWhite, CircleShape)
+                    .testTag("more_back_button")
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Volver a Inicio",
+                    tint = TitaniumTextPrimary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = "MÁS OPCIONES",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    letterSpacing = 0.8.sp,
+                    color = TitaniumTextSecondary
+                )
+                Text(
+                    text = "Gestión y Ajustes",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = TitaniumTextPrimary
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -237,15 +267,6 @@ fun MoreScreen(
                     title = "Presupuestos mensuales",
                     subtitle = "Controla tus límites de gasto por categoría con alertas",
                     onClick = onNavigateToBudgets
-                )
-
-                OptionRow(
-                    icon = Icons.Default.CheckCircle,
-                    iconTint = EmeraldGreen,
-                    iconBg = EmeraldGreenLight,
-                    title = "Metas de ahorro",
-                    subtitle = "Define tus objetivos (Viaje, PC, Emergencias) y registra abonos",
-                    onClick = onNavigateToGoals
                 )
 
                 OptionRow(
@@ -381,13 +402,26 @@ fun MoreScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = adjustAmountText,
-                        onValueChange = { adjustAmountText = it },
-                        label = { Text("Nuevo saldo real ($)") },
+                        onValueChange = { input -> adjustAmountText = Formatters.formatAmountInput(input) },
+                        label = { Text("Nuevo saldo real ($)", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElectricBlue,
-                            unfocusedBorderColor = TitaniumBorder
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = PetrolDarkest,
+                            unfocusedContainerColor = PetrolDarkest,
+                            focusedBorderColor = GoldPrimary,
+                            unfocusedBorderColor = PetrolLight,
+                            focusedLabelColor = GoldLight,
+                            unfocusedLabelColor = Color(0xFFE2E8F0),
+                            cursorColor = GoldPrimary
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -395,11 +429,24 @@ fun MoreScreen(
                     OutlinedTextField(
                         value = adjustNote,
                         onValueChange = { adjustNote = it },
-                        label = { Text("Motivo del ajuste") },
+                        label = { Text("Motivo del ajuste", color = Color(0xFFE2E8F0), fontWeight = FontWeight.SemiBold) },
                         singleLine = true,
+                        textStyle = TextStyle(
+                            fontFamily = PoppinsFontFamily,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElectricBlue,
-                            unfocusedBorderColor = TitaniumBorder
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedContainerColor = PetrolDarkest,
+                            unfocusedContainerColor = PetrolDarkest,
+                            focusedBorderColor = GoldPrimary,
+                            unfocusedBorderColor = PetrolLight,
+                            focusedLabelColor = GoldLight,
+                            unfocusedLabelColor = Color(0xFFE2E8F0),
+                            cursorColor = GoldPrimary
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -408,13 +455,13 @@ fun MoreScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val newBal = adjustAmountText.toDoubleOrNull() ?: currentBalance
+                        val newBal = if (adjustAmountText.isNotBlank()) Formatters.parseAmountInput(adjustAmountText) else currentBalance
                         onAdjustCash(newBal, adjustNote)
                         showAdjustDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary)
                 ) {
-                    Text("Aplicar ajuste", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold)
+                    Text("Aplicar ajuste", fontFamily = PoppinsFontFamily, fontWeight = FontWeight.Bold, color = Color.White)
                 }
             },
             dismissButton = {

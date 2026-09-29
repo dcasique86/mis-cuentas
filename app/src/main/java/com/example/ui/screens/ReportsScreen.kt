@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +62,7 @@ fun ReportsScreen(
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onResetCurrentMonth: () -> Unit,
+    onBackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -73,21 +75,45 @@ fun ReportsScreen(
         Spacer(modifier = Modifier.height(14.dp))
 
         // Screen Header
-        Text(
-            text = "REPORTES",
-            fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 11.sp,
-            letterSpacing = 0.8.sp,
-            color = TitaniumTextSecondary
-        )
-        Text(
-            text = "Resumen Mensual",
-            fontFamily = PoppinsFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            color = TitaniumTextPrimary
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (onBackClick != null) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(SurfaceWhite, CircleShape)
+                        .testTag("reports_back_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver a Inicio",
+                        tint = TitaniumTextPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            Column {
+                Text(
+                    text = "REPORTES",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    letterSpacing = 0.8.sp,
+                    color = TitaniumTextSecondary
+                )
+                Text(
+                    text = "Resumen Mensual",
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = TitaniumTextPrimary
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(14.dp))
 

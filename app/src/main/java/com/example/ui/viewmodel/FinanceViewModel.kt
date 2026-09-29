@@ -78,8 +78,7 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             database.autoRuleDao()
         )
         viewModelScope.launch {
-            // Clear database to $0 for real user testing
-            repository.clearDatabaseForRealTesting()
+            repository.seedInitialDataIfEmpty()
             notifyWidgetUpdate()
         }
     }

@@ -3,7 +3,7 @@
     android:id="@+id/widget_standard_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_widget_light_card"
+    android:background="@drawable/bg_widget_dark_card"
     android:orientation="vertical"
     android:padding="12dp">
 
@@ -17,7 +17,7 @@
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:src="@drawable/ic_widget_app_logo_mark"
+            android:src="@drawable/ic_app_wallet_icon"
             android:contentDescription="Mis Cuentas" />
 
         <LinearLayout
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mis Cuentas"
-                android:textColor="#0F4D3C"
+                android:textColor="#EDEDED"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tu dinero, en orden."
-                android:textColor="#7A8B82"
+                android:textColor="#94A3B8"
                 android:textSize="9sp" />
         </LinearLayout>
 
@@ -52,7 +52,7 @@
             android:contentDescription="Actualizar" />
     </LinearLayout>
 
-    <Space
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="6dp" />
 
@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Efectivo disponible"
-                android:textColor="#7A8B82"
+                android:textColor="#94A3B8"
                 android:textSize="10sp" />
 
             <TextView
@@ -83,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$ 0"
-                android:textColor="#0F4D3C"
+                android:textColor="#EDEDED"
                 android:textSize="21sp"
                 android:textStyle="bold" />
 
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:text="— $0 hoy"
-                android:textColor="#1E7E45"
+                android:textColor="#34D399"
                 android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -117,7 +117,7 @@
                 <FrameLayout
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:background="@drawable/bg_widget_circle_green">
+                    android:background="@drawable/bg_widget_circle_green_dark">
 
                     <ImageView
                         android:layout_width="10dp"
@@ -138,7 +138,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ingresos"
-                        android:textColor="#7A8B82"
+                        android:textColor="#94A3B8"
                         android:textSize="9sp" />
 
                     <TextView
@@ -146,13 +146,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$ 0"
-                        android:textColor="#1E7E45"
+                        android:textColor="#34D399"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
-            <Space
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="4dp" />
 
@@ -166,7 +166,7 @@
                 <FrameLayout
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:background="@drawable/bg_widget_circle_coral">
+                    android:background="@drawable/bg_widget_circle_coral_dark">
 
                     <ImageView
                         android:layout_width="10dp"
@@ -187,7 +187,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Gastos"
-                        android:textColor="#7A8B82"
+                        android:textColor="#94A3B8"
                         android:textSize="9sp" />
 
                     <TextView
@@ -195,7 +195,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$ 0"
-                        android:textColor="#D93025"
+                        android:textColor="#F87171"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -203,7 +203,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Space
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="8dp" />
 
@@ -222,7 +222,7 @@
             android:background="@drawable/bg_widget_income_btn"
             android:gravity="center"
             android:text="+ Ingreso"
-            android:textColor="#FFFFFF"
+            android:textColor="#34D399"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -235,7 +235,7 @@
             android:background="@drawable/bg_widget_expense_btn"
             android:gravity="center"
             android:text="− Gasto"
-            android:textColor="#FFFFFF"
+            android:textColor="#F87171"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
